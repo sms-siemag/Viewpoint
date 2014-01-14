@@ -340,6 +340,172 @@ module Viewpoint::EWS::SOAP
       nbuild[NS_EWS_TYPES].DisplayName(name)
     end
 
+    def given_name!(name)
+      nbuild[NS_EWS_TYPES].GivenName(name)
+    end
+
+    def initials!(name)
+      nbuild[NS_EWS_TYPES].Initials(name)
+    end
+
+    def middle_name!(name)
+      nbuild[NS_EWS_TYPES].MiddleName(name)
+    end
+
+    def company_name!(name)
+      nbuild[NS_EWS_TYPES].CompanyName(name)
+    end
+
+    def assistant_name!(name)
+      nbuild[NS_EWS_TYPES].AssistantName(name)
+    end
+
+    def birthday!(name)
+      nbuild[NS_EWS_TYPES].Birthday(name)
+    end
+
+    def business_home_page!(name)
+      nbuild[NS_EWS_TYPES].BusinessHomePage(name)
+    end
+
+    def department!(name)
+      nbuild[NS_EWS_TYPES].Department(name)
+    end
+
+    def generation!(name)
+      nbuild[NS_EWS_TYPES].Generation(name)
+    end
+
+    def nickname!(name)
+      nbuild[NS_EWS_TYPES].Nickname(name)
+    end
+
+    def job_title!(name)
+      nbuild[NS_EWS_TYPES].JobTitle(name)
+    end
+
+    def manager!(name)
+      nbuild[NS_EWS_TYPES].Manager(name)
+    end
+
+    def mileage!(name)
+      nbuild[NS_EWS_TYPES].Mileage(name)
+    end
+
+    def office_location!(name)
+      nbuild[NS_EWS_TYPES].OfficeLocation(name)
+    end
+
+    def profession!(name)
+      nbuild[NS_EWS_TYPES].Profession(name)
+    end
+
+    def spouse_name!(name)
+      nbuild[NS_EWS_TYPES].SpouseName(name)
+    end
+
+    def surname!(name)
+      nbuild[NS_EWS_TYPES].Surname(name)
+    end
+
+    def file_as!(name)
+      nbuild[NS_EWS_TYPES].FileAs(name)
+    end
+
+    def file_as_mapping!(name)
+      nbuild[NS_EWS_TYPES].FileAsMapping(name)
+    end
+
+    def wedding_anniversary!(name)
+      nbuild[NS_EWS_TYPES].WeddingAnniversary(name)
+    end
+
+    def phonetic_full_name!(name)
+      nbuild[NS_EWS_TYPES].PhoneticFullName(name)
+    end
+
+    def phonetic_first_name!(name)
+      nbuild[NS_EWS_TYPES].PhoneticFirstName(name)
+    end
+
+    def phonetic_last_name!(name)
+      nbuild[NS_EWS_TYPES].PhoneticLastName(name)
+    end
+
+    def alias!(name)
+      nbuild[NS_EWS_TYPES].Alias(name)
+    end
+
+    def notes!(name)
+      nbuild[NS_EWS_TYPES].Notes(name)
+    end
+
+    def children!(names)
+      nbuild[NS_EWS_TYPES].Children{
+        names.each{|name|nbuild[NS_EWS_TYPES].String(name)}
+      }
+    end
+
+    def categories!(names)
+      nbuild[NS_EWS_TYPES].Categories{
+        names.each{|name|nbuild[NS_EWS_TYPES].String(name)}
+      }
+    end
+
+    def companies!(names)
+      nbuild[NS_EWS_TYPES].Companies{
+        names.each{|name|nbuild[NS_EWS_TYPES].String(name)}
+      }
+    end
+
+    def email_addresses!(addresses)
+      nbuild[NS_EWS_TYPES].EmailAddresses {
+        addresses.each do |address|
+          attrs = {Key: address[:key]}
+          attrs[:Name] = address[:name] if address[:name] && address[:name] != ''
+          attrs[:RoutingType] = address[:routing_type] if address[:routing_type] && address[:routing_type] != ''
+          attrs[:MailboxType] = address[:mailbox_type] if address[:mailbox_type] && address[:mailbox_type] != ''
+          nbuild[NS_EWS_TYPES].Entry(attrs) {
+            nbuild.text address[:text]
+          }
+        end
+      }
+    end
+
+    def physical_addresses!(addresses)
+      nbuild[NS_EWS_TYPES].PhysicalAddresses {
+        addresses.each do |address|
+          nbuild[NS_EWS_TYPES].Entry(Key: address[:key]) {
+            nbuild[NS_EWS_TYPES].Street(address[:street])
+            nbuild[NS_EWS_TYPES].City(address[:city])
+            nbuild[NS_EWS_TYPES].State(address[:state])
+            nbuild[NS_EWS_TYPES].CountryOrRegion(address[:country_or_region])
+            nbuild[NS_EWS_TYPES].PostalCode(address[:postal_code])
+          }
+        end
+      }
+    end
+
+    def im_addresses!(addresses)
+      nbuild[NS_EWS_TYPES].ImAddresses {
+        addresses.each do |address|
+          nbuild[NS_EWS_TYPES].Entry(Key: address[:key]) {
+            nbuild.text address[:text]
+          }
+        end
+      }
+    end
+
+    def phone_numbers!(numbers)
+      nbuild[NS_EWS_TYPES].PhoneNumbers {
+        numbers.each do |number|
+          nbuild[NS_EWS_TYPES].Entry(Key: number[:key]) {
+            nbuild.text number[:text]
+          }
+        end
+      }
+    end
+
     # Build the AdditionalProperties element
     # @see http://msdn.microsoft.com/en-us/library/aa563810.aspx
     def additional_properties!(addprops)
@@ -818,6 +984,14 @@ module Viewpoint::EWS::SOAP
 
     def task!(item)
       nbuild[NS_EWS_TYPES].Task {
+        item.each_pair {|k,v|
+          self.send("#{k}!", v)
+        }
+      }
+    end
+
+    def contact!(item)
+      nbuild[NS_EWS_TYPES].Contact {
         item.each_pair {|k,v|
           self.send("#{k}!", v)
         }
