@@ -29,7 +29,7 @@ module Viewpoint::EWS::FolderAccessors
   # @param [Hash] opts Misc options to control request
   # @option opts [String,Symbol] :root Either a FolderId(String) or a
   #   DistinguishedFolderId(Symbol) . This is where to start the search from.
-  #   Usually :root,:msgfolderroot, or :publicfoldersroot
+  #   Usually :root,:msgfolderroot, or :publicfoldersroot 
   # @option opts [Symbol] :traversal :shallow/:deep/:soft_deleted
   # @option opts [Symbol] :shape :id_only/:default/:all_properties
   # @option opts [optional, String] :folder_type an optional folder type to
