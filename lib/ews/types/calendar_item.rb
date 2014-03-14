@@ -13,14 +13,21 @@ module Viewpoint::EWS::Types
       start:   [:start, :text],
       end:   [:end, :text],
       location:   [:location, :text],
-      all_day?:   [:is_all_day_event, :text]
+      all_day?:   [:is_all_day_event, :text],
+      is_draft?:   [:is_draft, :text],
+      is_from_me?:   [:is_from_me, :text],
+      is_unmodified?:   [:is_unmodified, :text],
+      calendar_item_type:   [:calendar_item_type, :text]
    }
 
     CALENDAR_ITEM_KEY_TYPES = {
       recurring?:   ->(str){str.downcase == 'true'},
       meeting?:     ->(str){str.downcase == 'true'},
       cancelled?:   ->(str){str.downcase == 'true'},
-      all_day?:   ->(str){str.downcase == 'true'}
+      all_day?:   ->(str){str.downcase == 'true'},
+      is_draft?:   ->(str){str.downcase == 'true'},
+      is_from_me?:   ->(str){str.downcase == 'true'},
+      is_unmodified?:   ->(str){str.downcase == 'true'}
     }
     CALENDAR_ITEM_KEY_ALIAS = {}
 
