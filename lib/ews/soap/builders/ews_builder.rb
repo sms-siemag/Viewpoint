@@ -1052,6 +1052,13 @@ module Viewpoint::EWS::SOAP
       nbuild[NS_EWS_TYPES].NumberOfOccurrences(count)
     end
 
+    def cancel_calendar_item!(item)
+      nbuild[NS_EWS_TYPES].CancelCalendarItem {
+        item.each_pair {|k,v|
+          self.send("#{k}!", v)
+        }
+      }
+    end
 
     def task!(item)
       nbuild[NS_EWS_TYPES].Task {
