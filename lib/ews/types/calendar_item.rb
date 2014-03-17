@@ -23,6 +23,9 @@ module Viewpoint::EWS::Types
       recurrence: [:recurrence, :elems ],
       deleted_occurrences: [:deleted_occurrences, :elems ],
       modified_occurrences: [:modified_occurrences, :elems ]
+      reminder_due_by: [:reminder_due_by, :text],
+      reminder_minutes_before_start: [:reminder_minutes_before_start, :text],
+      reminder_is_set?:   [:reminder_is_set, :text],
       is_draft?:   [:is_draft, :text],
       is_from_me?:   [:is_from_me, :text],
       is_unmodified?:   [:is_unmodified, :text],
@@ -43,6 +46,7 @@ module Viewpoint::EWS::Types
       modified_occurrences: :build_modified_occurrences
       is_draft?:   ->(str){str.downcase == 'true'},
       is_from_me?:   ->(str){str.downcase == 'true'},
+      reminder_is_set?:   ->(str){str.downcase == 'true'},
       is_unmodified?:   ->(str){str.downcase == 'true'}
     }
     CALENDAR_ITEM_KEY_ALIAS = {}
