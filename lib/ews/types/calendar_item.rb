@@ -13,10 +13,13 @@ module Viewpoint::EWS::Types
       start:   [:start, :text],
       end:   [:end, :text],
       location:   [:location, :text],
+      reminder_due_by: [:reminder_due_by, :text],
+      reminder_minutes_before_start: [:reminder_minutes_before_start, :text],
       all_day?:   [:is_all_day_event, :text],
       is_draft?:   [:is_draft, :text],
       is_from_me?:   [:is_from_me, :text],
       is_unmodified?:   [:is_unmodified, :text],
+      reminder_is_set?:   [:reminder_is_set, :text],
       calendar_item_type:   [:calendar_item_type, :text]
    }
 
@@ -27,6 +30,7 @@ module Viewpoint::EWS::Types
       all_day?:   ->(str){str.downcase == 'true'},
       is_draft?:   ->(str){str.downcase == 'true'},
       is_from_me?:   ->(str){str.downcase == 'true'},
+      reminder_is_set?:   ->(str){str.downcase == 'true'},
       is_unmodified?:   ->(str){str.downcase == 'true'}
     }
     CALENDAR_ITEM_KEY_ALIAS = {}
