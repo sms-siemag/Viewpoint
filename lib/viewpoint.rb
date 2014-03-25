@@ -23,21 +23,11 @@ require 'nokogiri'
 require 'ostruct'
 require 'logging'
 
-# Class Extensions (Monkey patches)
-require 'extensions/string'
+# String utilities
+require 'viewpoint/string_utils'
 
-module Viewpoint
-  module EWS
-    attr_reader :logger
-    Logging.logger.root.level = :debug
-    Logging.logger.root.appenders = Logging.appenders.stdout
-
-    def self.root_logger
-      Logging.logger.root
-    end
-
-  end # EWS
-end
+# Load the logging setup
+require 'viewpoint/logging'
 
 # Load the Exception classes
 require 'ews/exceptions/exceptions'
@@ -63,6 +53,7 @@ require 'ews/soap/exchange_user_configuration'
 require 'ews/soap/exchange_time_zones'
 require 'ews/soap/exchange_web_service'
 
+require 'ews/errors'
 require 'ews/connection_helper'
 require 'ews/connection'
 

@@ -22,6 +22,7 @@ module Viewpoint::EWS::SOAP
   # subelements to a method of the same name with a '!' after it.
   class EwsBuilder
     include Viewpoint::EWS
+    include Viewpoint::StringUtils
 
     attr_reader :nbuild
     def initialize
@@ -94,7 +95,7 @@ module Viewpoint::EWS::SOAP
         txt = vals.delete(:text)
         xmlns_attribute = vals.delete(:xmlns_attribute)
 
-        node = @nbuild.send(keys.first.to_s.camel_case, txt, vals) {|x|
+        node = @nbuild.send(camel_case(keys.first), txt, vals) {|x|
           build_xml!(se) if se
         }
 
@@ -144,14 +145,14 @@ module Viewpoint::EWS::SOAP
     # @todo needs peer check
     def indexed_page_item_view!(indexed_page_item_view)
       attribs = {}
-      indexed_page_item_view.each_pair {|k,v| attribs[k.to_s.camel_case] = v.to_s}
+      indexed_page_item_view.each_pair {|k,v| attribs[camel_case(k)] = v.to_s}
       @nbuild[NS_EWS_MESSAGES].IndexedPageItemView(attribs)
     end
 
     # Build the BaseShape element
     # @see http://msdn.microsoft.com/en-us/library/aa580545.aspx
     def base_shape!(base_shape)
-      @nbuild[NS_EWS_TYPES].BaseShape(base_shape.to_s.camel_case)
+      @nbuild[NS_EWS_TYPES].BaseShape(camel_case(base_shape))
     end
 
     def mime_content!(include_mime_content)
@@ -555,8 +556,8 @@ module Viewpoint::EWS::SOAP
 
     def user_oof_settings!(opts)
       nbuild[NS_EWS_TYPES].UserOofSettings {
-        nbuild.OofState(opts[:oof_state].to_s.camel_case)
-        nbuild.ExternalAudience(opts[:external_audience].to_s.camel_case) if opts[:external_audience]
+        nbuild.OofState(camel_case(opts[:oof_state]))
+        nbuild.ExternalAudience(camel_case(opts[:external_audience])) if opts[:external_audience]
         duration!(opts[:duration]) if opts[:duration]
         nbuild.InternalReply {
           nbuild.Message(opts[:internal_reply])
@@ -592,7 +593,7 @@ module Viewpoint::EWS::SOAP
           nbuild[NS_EWS_TYPES].StartTime(format_time opts[:time_window][:start_time])
           nbuild[NS_EWS_TYPES].EndTime(format_time opts[:time_window][:end_time])
         }
-        nbuild[NS_EWS_TYPES].RequestedView(opts[:requested_view][:requested_free_busy_view].to_s.camel_case)
+        nbuild[NS_EWS_TYPES].RequestedView(camel_case(opts[:requested_view][:requested_free_busy_view]))
       }
     end
 
@@ -790,12 +791,16 @@ module Viewpoint::EWS::SOAP
       nbuild[NS_EWS_TYPES].FieldURI('FieldURI' => expr[:field_uRI])
     end
 
+    alias_method :field_uri, :field_uRI
+
     def indexed_field_uRI(expr)
       nbuild[NS_EWS_TYPES].IndexedFieldURI(
         'FieldURI'    => expr[:field_uRI],
         'FieldIndex'  => expr[:field_index]
       )
     end
+
+    alias_method :indexed_field_uri, :indexed_field_uRI
 
     def extended_field_uRI(expr)
       nbuild[NS_EWS_TYPES].ExtendedFieldURI {
@@ -807,6 +812,8 @@ module Viewpoint::EWS::SOAP
         nbuild.parent['PropertyType'] = expr[:property_type] if expr[:property_type]
       }
     end
+
+    alias_method :extended_field_uri, :extended_field_uRI
 
     def extended_properties!(eprops)
       eprops.each {|ep| extended_property!(ep)}
@@ -839,6 +846,8 @@ module Viewpoint::EWS::SOAP
       }
     end
 
+    alias_method :field_uri_or_constant, :field_uRI_or_constant
+
     def constant(expr)
       nbuild[NS_EWS_TYPES].Constant('Value' => expr[:value])
     end
@@ -846,14 +855,14 @@ module Viewpoint::EWS::SOAP
     # Build the CalendarView element
     def calendar_view!(cal_view)
       attribs = {}
-      cal_view.each_pair {|k,v| attribs[k.to_s.camel_case] = v.to_s}
+      cal_view.each_pair {|k,v| attribs[camel_case(k)] = v.to_s}
       @nbuild[NS_EWS_MESSAGES].CalendarView(attribs)
     end
 
     # Build the ContactsView element
     def contacts_view!(con_view)
       attribs = {}
-      con_view.each_pair {|k,v| attribs[k.to_s.camel_case] = v.to_s}
+      con_view.each_pair {|k,v| attribs[camel_case(k)] = v.to_s}
       @nbuild[NS_EWS_MESSAGES].ContactsView(attribs)
     end
 
@@ -861,7 +870,7 @@ module Viewpoint::EWS::SOAP
     def event_types!(evtypes)
       @nbuild[NS_EWS_TYPES].EventTypes {
         evtypes.each do |et|
-          @nbuild[NS_EWS_TYPES].EventType(et.to_s.camel_case)
+          @nbuild[NS_EWS_TYPES].EventType(camel_case(et))
         end
       }
     end
@@ -1040,7 +1049,7 @@ module Viewpoint::EWS::SOAP
     def subject!(sub)
       nbuild[NS_EWS_TYPES].Subject(sub)
     end
-    
+
     def importance!(sub)
       nbuild[NS_EWS_TYPES].Importance(sub)
     end
@@ -1142,6 +1151,13 @@ module Viewpoint::EWS::SOAP
 
     def reminder_minutes_before_start!(minutes)
       nbuild[NS_EWS_TYPES].ReminderMinutesBeforeStart minutes
+    end
+
+    # @see http://msdn.microsoft.com/en-us/library/aa566143(v=exchg.150).aspx
+    # possible values Exchange Server 2010 = [Free, Tentative, Busy, OOF, NoData]
+    #                 Exchange Server 2013 = [Free, Tentative, Busy, OOF, WorkingElsewhere, NoData]
+    def legacy_free_busy_status!(state)
+      nbuild[NS_EWS_TYPES].LegacyFreeBusyStatus(state)
     end
 
     # @see http://msdn.microsoft.com/en-us/library/aa565428(v=exchg.140).aspx

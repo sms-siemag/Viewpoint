@@ -16,32 +16,41 @@
   limitations under the License.
 =end
 
-module Viewpoint::EWS::SOAP
+module Viewpoint::EWS::Errors
+  class ResponseError < RuntimeError
+    attr_reader :response
 
-  class CreateAttachmentResponseMessage < ResponseMessage
-    include Viewpoint::StringUtils
-
-    def attachments
-      return @attachments if @attachments
-
-      a = safe_hash_access message, [:elems, :attachments, :elems]
-      @attachments = a.nil? ? nil : parse_attachments(a)
+    def initialize(message, response)
+      super(message)
+      @response = response
     end
 
-
-    private
-
-
-    def parse_attachments(att)
-      att.collect do |a|
-        type = a.keys.first
-        klass = Viewpoint::EWS::Types.const_get(camel_case(type))
-        item = OpenStruct.new
-        item.ews = nil
-        klass.new(item, a[type])
-      end
+    def status
+      response.status
     end
 
-  end # CreateAttachmentResponseMessage
+    def body
+      response.body
+    end
+  end
 
-end # Viewpoint::EWS::SOAP
+  class UnhandledResponseError < ResponseError
+  end
+
+  class ServerError < ResponseError
+  end
+
+  class UnauthorizedResponseError < ResponseError
+  end
+
+  class SoapResponseError < ResponseError
+    attr_reader :faultcode,
+                :faultstring
+
+    def initialize(message, response, faultcode, faultstring)
+      super(message, response)
+      @faultcode = faultcode
+      @faultstring = faultstring
+    end
+  end
+end

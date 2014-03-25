@@ -3,6 +3,7 @@ module Viewpoint::EWS::Types
     include Viewpoint::EWS
     include Viewpoint::EWS::Types
     include Viewpoint::EWS::Types::Item
+    include Viewpoint::StringUtils
 
     CALENDAR_ITEM_KEY_PATHS = {
       recurring?:   [:is_recurring, :text],
@@ -13,9 +14,17 @@ module Viewpoint::EWS::Types
       start:   [:start, :text],
       end:   [:end, :text],
       location:   [:location, :text],
+      all_day?:   [:is_all_day_event, :text],
+      my_response_type:   [:my_response_type, :text],
+      organizer: [:organizer, :elems, 0, :mailbox, :elems],
+      required_attendees: [:required_attendees, :elems ],
+      recurrence: [:recurrence, :elems ],
+      deleted_occurrences: [:deleted_occurrences, :elems ],
+      modified_occurrences: [:modified_occurrences, :elems ],
+      has_attachments?: [:has_attachments, :text ],
+      attachments: [:attachments, :elems ],
       reminder_due_by: [:reminder_due_by, :text],
       reminder_minutes_before_start: [:reminder_minutes_before_start, :text],
-      all_day?:   [:is_all_day_event, :text],
       is_draft?:   [:is_draft, :text],
       is_from_me?:   [:is_from_me, :text],
       is_unmodified?:   [:is_unmodified, :text],
@@ -28,6 +37,10 @@ module Viewpoint::EWS::Types
       meeting?:     ->(str){str.downcase == 'true'},
       cancelled?:   ->(str){str.downcase == 'true'},
       all_day?:   ->(str){str.downcase == 'true'},
+      organizer: :build_mailbox_user,
+      required_attendees: :build_attendees_users,
+      deleted_occurrences: :build_deleted_occurrences,
+      modified_occurrences: :build_modified_occurrences,
       is_draft?:   ->(str){str.downcase == 'true'},
       is_from_me?:   ->(str){str.downcase == 'true'},
       reminder_is_set?:   ->(str){str.downcase == 'true'},
@@ -69,7 +82,7 @@ module Viewpoint::EWS::Types
             elsif value.is_a? Hash
               node = {name => {}}
               value.each do |attrib_key, attrib_value|
-                attrib_key = attrib_key.to_s.camel_case unless attrib_key == :text
+                attrib_key = camel_case(attrib_key) unless attrib_key == :text
                 node[name][attrib_key] = attrib_value
               end
               node

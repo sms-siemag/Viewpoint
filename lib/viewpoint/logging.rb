@@ -16,32 +16,12 @@
   limitations under the License.
 =end
 
-module Viewpoint::EWS::SOAP
+module Viewpoint
+  module EWS
+    attr_reader :logger
 
-  class CreateAttachmentResponseMessage < ResponseMessage
-    include Viewpoint::StringUtils
-
-    def attachments
-      return @attachments if @attachments
-
-      a = safe_hash_access message, [:elems, :attachments, :elems]
-      @attachments = a.nil? ? nil : parse_attachments(a)
+    def self.root_logger
+      Logging.logger.root
     end
-
-
-    private
-
-
-    def parse_attachments(att)
-      att.collect do |a|
-        type = a.keys.first
-        klass = Viewpoint::EWS::Types.const_get(camel_case(type))
-        item = OpenStruct.new
-        item.ews = nil
-        klass.new(item, a[type])
-      end
-    end
-
-  end # CreateAttachmentResponseMessage
-
-end # Viewpoint::EWS::SOAP
+  end # EWS
+end
