@@ -19,12 +19,13 @@
 module Viewpoint::EWS::SOAP
 
   class UpdateItemResponseMessage < ResponseMessage
+    include Viewpoint::StringUtils
 
     def item
       unless @item
         ev = items.first
         type = ev.keys.first
-        klass = Viewpoint::EWS::Types.const_get(type.to_s.camel_case)
+        klass = Viewpoint::EWS::Types.const_get(camel_case(type))
         @item = klass.new(nil, ev[type])
       end
       @item
