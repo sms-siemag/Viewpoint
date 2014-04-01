@@ -35,8 +35,9 @@ module Viewpoint::EWS::Types
     # @option attributes :end [Time]
     # @return [CalendarItem]
     # @see Template::CalendarItem
-    def create_item(attributes)
+    def create_item(attributes, opts={})
       template = Viewpoint::EWS::Template::CalendarItem.new attributes
+      template.send_meeting_invitations = opts[:send_meeting_invitations] if opts[:send_meeting_invitations]
       template.saved_item_folder_id = {id: self.id, change_key: self.change_key}
       rm = ews.create_item(template.to_ews_create).response_messages.first
       if rm && rm.success?
