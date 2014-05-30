@@ -9,18 +9,18 @@ module Viewpoint::EWS::Types
       recurring?:   [:is_recurring, :text],
       meeting?:     [:is_meeting, :text],
       cancelled?:   [:is_cancelled, :text],
-      duration:   [:duration, :text],
-      time_zone:   [:time_zone, :text],
-      start:   [:start, :text],
-      end:   [:end, :text],
-      location:   [:location, :text],
-      all_day?:   [:is_all_day_event, :text],
+      duration:     [:duration, :text],
+      time_zone:    [:time_zone, :text],
+      start:        [:start, :text],
+      end:          [:end, :text],
+      location:     [:location, :text],
+      all_day?:     [:is_all_day_event, :text],
       my_response_type:   [:my_response_type, :text],
       organizer: [:organizer, :elems, 0, :mailbox, :elems],
+      optional_attendees: [:optional_attendees, :elems ],
       required_attendees: [:required_attendees, :elems ],
       recurrence: [:recurrence, :elems ],
       deleted_occurrences: [:deleted_occurrences, :elems ],
-      modified_occurrences: [:modified_occurrences, :elems ],
       has_attachments?: [:has_attachments, :text ],
       attachments: [:attachments, :elems ],
       reminder_due_by: [:reminder_due_by, :text],
@@ -29,15 +29,19 @@ module Viewpoint::EWS::Types
       is_from_me?:   [:is_from_me, :text],
       is_unmodified?:   [:is_unmodified, :text],
       reminder_is_set?:   [:reminder_is_set, :text],
-      calendar_item_type:   [:calendar_item_type, :text]
+      calendar_item_type:   [:calendar_item_type, :text],
+      modified_occurrences: [:modified_occurrences, :elems ]
    }
 
     CALENDAR_ITEM_KEY_TYPES = {
+      start:        ->(str){DateTime.parse(str)},
+      end:          ->(str){DateTime.parse(str)},
       recurring?:   ->(str){str.downcase == 'true'},
       meeting?:     ->(str){str.downcase == 'true'},
       cancelled?:   ->(str){str.downcase == 'true'},
-      all_day?:   ->(str){str.downcase == 'true'},
+      all_day?:     ->(str){str.downcase == 'true'},
       organizer: :build_mailbox_user,
+      optional_attendees: :build_attendees_users,
       required_attendees: :build_attendees_users,
       deleted_occurrences: :build_deleted_occurrences,
       modified_occurrences: :build_modified_occurrences,
@@ -113,8 +117,13 @@ module Viewpoint::EWS::Types
 
     end
 
+    def duration_in_seconds
+      iso8601_duration_to_seconds(duration)
+    end
+
 
     private
+
 
     def key_paths
       super.merge(CALENDAR_ITEM_KEY_PATHS)
