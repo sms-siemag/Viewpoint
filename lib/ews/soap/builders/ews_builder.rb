@@ -1292,7 +1292,7 @@ module Viewpoint::EWS::SOAP
     end
 
     def xml_data!(xml_data)
-      @nbuild[NS_EWS_TYPES].XmlData(xml_data)
+      @nbuild[NS_EWS_TYPES].XmlData(Base64.encode64(xml_data))
     end
 
     # ---------------------- Helpers -------------------- #
