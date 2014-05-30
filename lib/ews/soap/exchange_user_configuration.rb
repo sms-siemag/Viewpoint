@@ -9,7 +9,7 @@ module Viewpoint::EWS::SOAP
     # a folder.
     # @see http://msdn.microsoft.com/en-us/library/aa563465.aspx
     # @param [Hash] opts
-    # @option opts [Hash] :user_config_name 
+    # @option opts [Hash] :user_config_name
     # @option opts [String] :user_config_props
     def get_user_configuration(opts)
       opts = opts.clone
@@ -23,6 +23,20 @@ module Viewpoint::EWS::SOAP
           x.parent.default_namespace = @default_ns
           builder.user_configuration_name!(opts[:user_config_name])
           builder.user_configuration_properties!(opts[:user_config_props])
+        }
+        end
+      end
+      do_soap_request(req, response_class: EwsSoapAvailabilityResponse)
+    end
+
+    def update_user_configuration(opts)
+      opts = opts.clone
+      validate_param(opts, :user_config_name, true)
+      req = build_soap! do |type, builder|
+        if(type == :header)
+        else
+        builder.nbuild[NS_EWS_MESSAGES].UpdateUserConfiguration {|x|
+          builder.user_configuration!(opts)
         }
         end
       end

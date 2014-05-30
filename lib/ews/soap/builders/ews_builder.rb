@@ -1328,8 +1328,9 @@ module Viewpoint::EWS::SOAP
     end
 
     def user_configuration_name!(cfg_name)
+      ns = @nbuild.parent.parent.name.match(/UpdateUserConfiguration/i) ? NS_EWS_TYPES : NS_EWS_MESSAGES
       attribs = {'Name' => cfg_name.delete(:name)}
-      @nbuild[NS_EWS_MESSAGES].UserConfigurationName(attribs) {
+      @nbuild[ns].UserConfigurationName(attribs) {
         fid = cfg_name.keys.first
         self.send "#{fid}!", cfg_name[fid][:id], cfg_name[fid][:change_key]
       }
@@ -1337,6 +1338,17 @@ module Viewpoint::EWS::SOAP
 
     def user_configuration_properties!(cfg_prop)
       @nbuild[NS_EWS_MESSAGES].UserConfigurationProperties(cfg_prop)
+    end
+
+    def user_configuration!(options)
+      @nbuild[NS_EWS_MESSAGES].UserConfiguration {|x|
+        user_configuration_name!(options[:user_config_name])
+        xml_data!(options[:xml_data]) if options[:xml_data]
+      }
+    end
+
+    def xml_data!(xml_data)
+      @nbuild[NS_EWS_TYPES].XmlData(xml_data)
     end
 
     # ---------------------- Helpers -------------------- #
