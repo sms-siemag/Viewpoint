@@ -40,7 +40,7 @@ module Viewpoint::EWS::SOAP
         }
         end
       end
-      do_soap_request(req, response_class: EwsSoapAvailabilityResponse)
+      do_soap_request(req, response_class: EwsSoapResponse)
     end
 
   end #ExchangeUserConfiguration
