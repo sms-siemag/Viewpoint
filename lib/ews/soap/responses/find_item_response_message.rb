@@ -47,11 +47,11 @@ module Viewpoint::EWS::SOAP
     end
 
     def items
-      root[:elems][0][:items][:elems] || []
+      root[:items] || []
     end
 
     def groups
-      root[:elems][0][:groups][:elems]
+      root[:groups]
     end
 
 
@@ -59,8 +59,8 @@ module Viewpoint::EWS::SOAP
     
 
     def attrib(key)
-      return nil unless root.has_key?(:attribs)
-      root[:attribs][key]
+      return nil unless root.has_key?(key)
+      root[key]
     end
 
   end
@@ -71,7 +71,7 @@ module Viewpoint::EWS::SOAP
     def root_folder
       return @root_folder if @root_folder
 
-      rf = safe_hash_access message, [:elems, :root_folder]
+      rf = safe_hash_access message, [:root_folder]
       @root_folder = rf.nil? ? nil : RootFolder.new(rf)
     end
 

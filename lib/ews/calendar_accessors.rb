@@ -20,15 +20,15 @@ module Viewpoint::EWS::CalendarAccessors
   include Viewpoint::EWS
 
   def event_busy_type( the_event )
-    the_event[:calendar_event][:elems][2][:busy_type][:text]
+    the_event[:calendar_event][:busy_type][:text]
   end
 
   def event_start_time( the_event )
-    the_event[:calendar_event][:elems][0][:start_time][:text]
+    the_event[:calendar_event][:start_time][:text]
   end
 
   def event_end_time( the_event )
-    the_event[:calendar_event][:elems][1][:end_time][:text]
+    the_event[:calendar_event][:end_time][:text]
   end
 
 end # Viewpoint::EWS::CalendarAccessors

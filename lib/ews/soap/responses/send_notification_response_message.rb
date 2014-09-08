@@ -21,29 +21,29 @@ module Viewpoint::EWS::SOAP
     include Viewpoint::StringUtils
 
     def notification
-      safe_hash_access message, [:elems, :notification, :elems]
+      safe_hash_access message, [:notification]
     end
 
     def subscription_id
-      safe_hash_access notification[0], [:subscription_id, :text]
+      safe_hash_access notification, [:subscription_id, :text]
     end
 
     def previous_watermark
-      safe_hash_access notification[1], [:previous_watermark, :text]
+      safe_hash_access notification, [:previous_watermark, :text]
     end
 
     def new_watermark
       ev = notification.last
       if ev
         type = ev.keys.first
-        ev[type][:elems][0][:watermark][:text]
+        ev[type][:watermark][:text]
       else
         nil
       end
     end
 
     def more_events?
-      safe_hash_access(notification[2], [:more_events, :text]) == 'true'
+      safe_hash_access(notification, [:more_events, :text]) == 'true'
     end
 
     def events

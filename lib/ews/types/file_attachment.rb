@@ -54,7 +54,7 @@ module Viewpoint::EWS::Types
 
     def parse_response(resp)
       if(resp.status == 'Success')
-        resp.response_message[:elems][:attachments][:elems][0][:file_attachment][:elems].inject(&:merge)
+        resp.response_message[:attachments][:file_attachment].inject(&:merge)
       else
         raise EwsError, "Could not retrieve #{self.class}. #{resp.code}: #{resp.message}"
       end

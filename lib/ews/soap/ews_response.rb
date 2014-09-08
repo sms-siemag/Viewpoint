@@ -24,23 +24,22 @@ module Viewpoint::EWS::SOAP
 
     def initialize(sax_hash)
       @resp = sax_hash
-      simplify!
     end
 
     def envelope
-      @resp[:envelope][:elems]
+      @resp[:envelope]
     end
 
     def header
-      envelope[0][:header][:elems]
+      envelope[:header]
     end
 
     def body
-      envelope[1][:body][:elems]
+      envelope[:body]
     end
 
     def response
-      body[0]
+      body
     end
 
     def response_messages
@@ -48,10 +47,9 @@ module Viewpoint::EWS::SOAP
 
       @response_messages = []
       response_type = response.keys.first
-      response[response_type][:elems][0][:response_messages][:elems].each do |rm|
-        response_message_type = rm.keys[0]
+      response[response_type][:response_messages].each do |response_message_type, rm|
         rm_klass = class_by_name(response_message_type)
-        @response_messages << rm_klass.new(rm)
+        @response_messages << rm_klass.new({response_message_type => rm})
       end
       @response_messages
     end
@@ -59,14 +57,6 @@ module Viewpoint::EWS::SOAP
 
     private
 
-
-    def simplify!
-      response_type = response.keys.first
-      response[response_type][:elems][0][:response_messages][:elems].each do |rm|
-        key = rm.keys.first
-        rm[key][:elems] = rm[key][:elems].inject(&:merge)
-      end
-    end
 
     def class_by_name(cname)
       begin

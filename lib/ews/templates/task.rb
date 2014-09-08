@@ -1,7 +1,7 @@
 module Viewpoint::EWS
   module Template
   # Template for creating Tasks
-  # @see http://msdn.microsoft.com/en-us/library/exchange/aa564765.aspx
+  # @see http://msdn.microsoft.com/en-us/library/aa563930(v=exchg.140).aspx
   class Task < OpenStruct
 
       # Available parameters with the required ordering

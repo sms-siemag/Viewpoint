@@ -48,7 +48,7 @@ module Viewpoint::EWS::SOAP
       name = ruby_case(name).to_sym
       elem = {}
       unless attributes.empty?
-        elem[:attribs] = attributes.collect{|a|
+        elem = attributes.collect{|a|
           { ruby_case(a.localname).to_sym => a.value}
         }.inject(&:merge)
       end
@@ -61,8 +61,23 @@ module Viewpoint::EWS::SOAP
       if @elems.empty?
         @struct[name] = elem
       else
-        @elems.last[:elems] = [] unless @elems.last[:elems].is_a?(Array)
-        @elems.last[:elems] << {name => elem}
+        if @elems.last.empty?
+          # @elems.last = {} unless @elems.last.is_a?(Hash)
+          @elems.last[name] = elem
+        else
+          if @elems.last.is_a?(Hash)
+            if @elems.last.has_key?(name)
+              parent_elem = @elems.pop
+              @elems << []
+              @elems.last << parent_elem
+              @elems.last << {name => elem}
+            else
+              @elems.last[name] = elem
+            end
+          elsif @elems.last.is_a?(Array)
+            @elems.last << {name => elem} 
+          end
+        end
       end
     end
 

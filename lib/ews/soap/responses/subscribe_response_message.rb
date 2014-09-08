@@ -20,7 +20,7 @@ module Viewpoint::EWS::SOAP
   class SubscribeResponseMessage < ResponseMessage
 
     def subscription
-      safe_hash_access message, [:elems]
+      safe_hash_access message, []
     end
 
     def subscription_id

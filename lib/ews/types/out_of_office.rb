@@ -126,18 +126,18 @@ private
     end
 
     def simplify!
-      oof_settings = @ews_item[:oof_settings][:elems].inject(:merge)
+      oof_settings = @ews_item[:oof_settings].inject(:merge)
       oof_settings[:oof_state] = oof_settings[:oof_state][:text].downcase.to_sym
       oof_settings[:external_audience] = oof_settings[:external_audience][:text]
       if oof_settings[:duration]
-        dur = oof_settings[:duration][:elems].inject(:merge)
+        dur = oof_settings[:duration].inject(:merge)
         oof_settings[:duration] = {
           start_time: DateTime.iso8601(dur[:start_time][:text]),
           end_time:   DateTime.iso8601(dur[:end_time][:text])
         }
       end
-      oof_settings[:internal_reply] = oof_settings[:internal_reply][:elems][0][:message][:text] || ""
-      oof_settings[:external_reply] = oof_settings[:external_reply][:elems][0][:message][:text] || ""
+      oof_settings[:internal_reply] = oof_settings[:internal_reply][:message][:text] || ""
+      oof_settings[:external_reply] = oof_settings[:external_reply][:message][:text] || ""
       @ews_item[:oof_settings] = oof_settings
       @ews_item[:allow_external_oof] = @ews_item[:allow_external_oof][:text]
     end

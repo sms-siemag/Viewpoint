@@ -24,47 +24,46 @@ module Viewpoint::EWS::SOAP
 
     def initialize(sax_hash)
       @resp = sax_hash
-      simplify!
     end
 
     def envelope
-      @resp[:envelope][:elems]
+      @resp[:envelope]
     end
 
     def header
-      envelope[0][:header][:elems]
+      envelope[:header]
     end
 
     def body
-      envelope[1][:body][:elems]
+      envelope[:body]
     end
 
     def response
-      body[0]
+      body
     end
 
     def response_messages
       key = response.keys.first
-      response[key][:elems].find{|e| e.keys.include? :response_messages }[:response_messages][:elems]
+      response[key][:response_messages]
     end
 
     def response_message
-      key = response_messages[0].keys.first
-      response_messages[0][key]
+      key = response_messages.keys.first
+      response_messages[key]
     end
 
     def response_class
-      response_message[:attribs][:response_class]
+      response_message[:response_class]
     end
     alias :status :response_class
 
     def response_code
-      response_message[:elems][:response_code][:text]
+      response_message[:response_code][:text]
     end
     alias :code :response_code
 
     def response_message_text
-      guard_hash response_message[:elems], [:message_text, :text]
+      guard_hash response_message, [:message_text, :text]
     end
     alias :message :response_message_text
 
@@ -75,13 +74,6 @@ module Viewpoint::EWS::SOAP
 
     private
 
-
-    def simplify!
-      response_messages.each do |rm|
-        key = rm.keys.first
-        rm[key][:elems] = rm[key][:elems].inject(&:merge)
-      end
-    end
 
     # If the keys don't exist in the Hash return nil
     # @param[Hash] hsh

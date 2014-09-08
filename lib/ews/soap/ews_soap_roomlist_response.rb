@@ -24,30 +24,22 @@ module Viewpoint::EWS::SOAP
 
     def response_messages
       key = response.keys.first
-      subresponse = response[key][:elems][1]
+      subresponse = response[key]
       response_class = subresponse.keys.first
-      subresponse[response_class][:elems]
+      subresponse[response_class]
     end
 
     def roomListsArray
-      response[:get_room_lists_response][:elems][1][:room_lists][:elems]
+      response[:get_room_lists_response][:room_lists]
     end
 
     def success?
-      response.first[1][:attribs][:response_class] == "Success"
+      response.first[:response_class] == "Success"
     end
 
     private
 
 
-    def simplify!
-      if response_messages
-        response_messages.each do |rm|
-          key = rm.keys.first
-          rm[key][:elems] = rm[key][:elems].inject(&:merge)
-        end
-      end
-    end
 
   end # EwsSoapRoomlistResponse
 

@@ -22,7 +22,7 @@ describe Viewpoint::EWS::FolderAccessors do
       before do
         resp = OpenStruct.new
         resp.status = 'Success'
-        rhash = {:elems => {:root_folder => {:elems => [{:folders =>{:elems => ResponseObjects.folders}}]}}}
+        rhash = {:root_folder => {:folders => ResponseObjects.folders}}
         resp.response_message = rhash
         @ecli.ews.stub(:find_folder).with(an_instance_of(Hash)) { resp }
         cbn = double("ClassByName")
@@ -38,7 +38,7 @@ describe Viewpoint::EWS::FolderAccessors do
       before do
         resp = OpenStruct.new
         resp.status = 'Success'
-        rhash = {:elems => {:folders =>{:elems => ResponseObjects.folders}}}
+        rhash = {:folders => ResponseObjects.folders}
         resp.response_message = rhash
         @ecli.ews.stub(:get_folder).with(an_instance_of(Hash)) { resp }
         cbn = double("ClassByName")

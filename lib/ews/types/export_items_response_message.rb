@@ -6,8 +6,8 @@ module Viewpoint::EWS::Types
     include Viewpoint::EWS::Types::Item
 
     BULK_KEY_PATHS = {
-      :id          => [:item_id, :attribs, :id],
-      :change_key  => [:item_id, :attribs, :change_key],
+      :id          => [:item_id, :id],
+      :change_key  => [:item_id, :change_key],
       :data        => [:data, :text]
     }
 
@@ -22,11 +22,11 @@ module Viewpoint::EWS::Types
     end
 
     def id
-      @item[:item_id][:attribs][:id]
+      @item[:item_id][:id]
     end
 
     def change_key
-      @item[:item_id][:attribs][:change_key]
+      @item[:item_id][:change_key]
     end
 
     def data

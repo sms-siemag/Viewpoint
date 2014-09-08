@@ -27,12 +27,12 @@ module Viewpoint::EWS::MailboxAccessors
 
     users = []
     if(resp.status == 'Success')
-      mb = resp.response_message[:elems][:resolution_set][:elems][0][:resolution][:elems][0]
-      users << Types::MailboxUser.new(ews, mb[:mailbox][:elems])
+      mb = resp.response_message[:resolution_set][:resolution]
+      users << Types::MailboxUser.new(ews, mb[:mailbox])
     elsif(resp.code == 'ErrorNameResolutionMultipleResults')
-      resp.response_message[:elems][:resolution_set][:elems].each do |u|
-      if u[:resolution][:elems][0][:mailbox]
-        users << Types::MailboxUser.new(ews, u[:resolution][:elems][0][:mailbox][:elems])
+      resp.response_message[:resolution_set].each do |u|
+      if u[:resolution][:mailbox]
+        users << Types::MailboxUser.new(ews, u[:resolution][:mailbox])
       end
       end
     else

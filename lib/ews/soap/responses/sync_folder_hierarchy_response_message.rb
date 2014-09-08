@@ -20,16 +20,16 @@ module Viewpoint::EWS::SOAP
   class SyncFolderHierarchyResponseMessage < ResponseMessage
 
     def sync_state
-      safe_hash_access message, [:elems, :sync_state, :text]
+      safe_hash_access message, [:sync_state, :text]
     end
 
     def includes_last_folder_in_range?
-      ans = safe_hash_access message, [:elems, :includes_last_folder_in_range, :text]
+      ans = safe_hash_access message, [:includes_last_folder_in_range, :text]
       ans.downcase == 'true'
     end
 
     def changes
-      safe_hash_access(message, [:elems, :changes, :elems]) || []
+      safe_hash_access(message, [:changes]) || []
     end
 
   end # SyncFolderHierarchyResponseMessage

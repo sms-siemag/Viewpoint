@@ -338,7 +338,7 @@ module Viewpoint::EWS::SOAP
     end
 
     def display_name!(name)
-      nbuild[NS_EWS_TYPES].DisplayName(name)
+      nbuild[NS_EWS_TYPES].DisplayName(name[:text])
     end
 
     # Build the AdditionalProperties element
@@ -811,6 +811,16 @@ module Viewpoint::EWS::SOAP
       }
     end
 
+    # @see http://msdn.microsoft.com/en-us/library/aa581315(v=exchg.140).aspx
+    def contact!(item)
+      nbuild[NS_EWS_TYPES].Contact {
+        item.each_pair {|k,v|
+          puts "#{k}! #{v}"
+          r =self.send("#{k}!", v)
+        }        
+      }
+    end
+
     def message!(item)
       nbuild[NS_EWS_TYPES].Message {
         if item[:extended_properties]
@@ -870,11 +880,11 @@ module Viewpoint::EWS::SOAP
     end
 
     def subject!(sub)
-      nbuild[NS_EWS_TYPES].Subject(sub)
+      nbuild[NS_EWS_TYPES].Subject(sub[:text])
     end
 
     def importance!(sub)
-      nbuild[NS_EWS_TYPES].Importance(sub)
+      nbuild[NS_EWS_TYPES].Importance(sub[:text])
     end
 
     def body!(b)
@@ -889,23 +899,266 @@ module Viewpoint::EWS::SOAP
       }
     end
 
+# @see http://msdn.microsoft.com/en-us/library/aa581315(v=exchg.140).aspx
+=begin
+   <MimeContent/>
+   <ItemId/>
+   <ParentFolderId/>
+   <ItemClass/>
+   <Subject/>
+   <Sensitivity/>
+   <Body/>
+   <Attachments/>
+   <DateTimeReceived/>
+   <Size/>
+   <Categories/>
+   <Importance/>
+   <InReplyTo/>
+   <IsSubmitted/>
+   <IsDraft/>
+   <IsFromMe/>
+   <IsResend/>
+   <IsUnmodified/>
+   <InternetMessageHeaders/>
+   <DateTimeSent/>
+   <DateTimeCreated/>
+   <ResponseObjects/>
+   <ReminderDueBy/>
+   <ReminderIsSet/>
+   <ReminderMinutesBeforeStart/>
+   <DisplayCc/>
+   <DisplayTo/>
+   <HasAttachments/>
+   <ExtendedProperty/>
+   <Culture/>
+   <EffectiveRights/>
+   <LastModifiedName/>
+   <LastModifiedTime/>
+   <IsAssociated/>
+   <WebClientReadFormQueryString/>
+   <WebClientEditFormQueryString/>
+   <ConversationId/>
+   <UniqueBody/>
+   <FileAs/>
+   <FileAsMapping/>
+   <DisplayName/>
+   <GivenName/>
+   <Initials/>
+   <MiddleName/>
+   <Nickname/>
+   <CompleteName/>
+   <CompanyName/>
+   <EmailAddresses/>
+   <PhysicalAddresses/>
+   <PhoneNumbers/>
+   <AssistantName/>
+   <Birthday/>
+   <BusinessHomePage/>
+   <Children/>
+   <Companies/>
+   <ContactSource/>
+   <Department/>
+   <Generation/>
+   <ImAddresses/>
+   <JobTitle/>
+   <Manager/>
+   <Mileage/>
+   <OfficeLocation/>
+   <PostalAddressIndex/>
+   <Profession/>
+   <SpouseName/>
+   <Surname/>
+   <WeddingAnniversary/>
+   <HasPicture/>
+   <PhoneticFullName/>
+   <PhoneticFirstName/>
+   <PhoneticLastName/>
+   <Alias/>
+   <Notes/>
+   <Photo/>
+   <UserSMIMECertificate/>
+   <MSExchangeCertificate/>
+   <DirectoryId/>
+   <ManagerMailbox/>
+   <DirectReports/>
+=end
+  
+    # @see http://msdn.microsoft.com/en-us/library/aa565861(v=exchg.140).aspx
+    def file_as!(f)
+      nbuild[NS_EWS_TYPES].FileAs(f[:text])      
+    end
+    
+    # @see http://msdn.microsoft.com/en-us/library/aa579712(v=exchg.140).aspx
+    def file_as_mapping!(f)
+      nbuild[NS_EWS_TYPES].FileAsMapping(f[:text])
+    end
+    
+    # @see http://msdn.microsoft.com/en-us/library/aa581108(v=exchg.140).aspx
+    def company_name!(c)
+      nbuild[NS_EWS_TYPES].CompanyName(c[:text])      
+    end
+
+    # @see http://msdn.microsoft.com/en-us/library/aa566451(v=exchg.140).aspx
+    def email_addresses!(e)
+      nbuild[NS_EWS_TYPES].EmailAddresses {
+        if e.is_a?(Hash)
+          emailaddress!(e[:entry])
+        else
+          e.each {|email| emailaddress!(email[:entry]) }
+        end
+      }
+    end
+    
+    def emailaddress!(e)
+      nbuild[NS_EWS_TYPES].Entry("Key" => e[:key]) { 
+        nbuild.text(e[:text])
+      }
+    end
+
+    # @see http://msdn.microsoft.com/en-us/library/aa563540(v=exchg.140).aspx
+    def phone_numbers!(p)
+      nbuild[NS_EWS_TYPES].PhoneNumbers {
+        if p.is_a?(Hash)
+          phonenumbers!(p[:entry])
+        else
+          p.each {|phone| phonenumbers!(phone[:entry]) }
+        end
+      }
+    end
+    
+    def phonenumbers!(p)
+      nbuild[NS_EWS_TYPES].Entry("Key" => p[:key]) { 
+        nbuild.text(p[:text])
+      }
+    end
+    
+    # @see http://msdn.microsoft.com/en-us/library/aa579679(v=exchg.140).aspx
+    def im_addresses!(d)
+      nbuild[NS_EWS_TYPES].ImAddresses {
+        if d.is_a?(Hash)
+          imaddresses!(d[:entry])
+        else
+          d.each {|imaddress| imaddresses!(imaddress[:entry]) }
+        end
+      }
+    end
+    
+    def imaddresses!(d)
+      nbuild[NS_EWS_TYPES].Entry("Key" => d[:key]) { 
+        nbuild.text(d[:text])
+      }
+    end
+    
+    # @see http://msdn.microsoft.com/en-us/library/aa580954(v=exchg.140).aspx
+    def job_title!(j)
+      nbuild[NS_EWS_TYPES].JobTitle(j[:text])      
+    end    
+     
+    # Readonly - exclude from building
+    def complete_name!(n)
+    end
+    
+    def display_cc!(n)
+    end
+    
+    def display_to!(n)
+    end     
+    
+    def web_client_read_form_query_string!(d)
+    end
+
+    def web_client_edit_form_query_string!(d)
+    end
+    
+    # @see http://msdn.microsoft.com/en-us/library/aa565687(v=exchg.140).aspx
+    def sensitivity!(s)
+      nbuild[NS_EWS_TYPES].Sensitivity(s[:text])
+    end
+    
+    # @see http://msdn.microsoft.com/en-us/library/aa563467(v=exchg.140).aspx
+    # def importance!(i)
+      # nbuild[NS_EWS_TYPES].Importance(i[:text])
+    # end
+        
+    # @SEE http://msdn.microsoft.com/en-us/library/dd899429(v=exchg.140).aspx
+    # Read-only
+    def is_associated!(a)
+    end
+    
+    # @see http://msdn.microsoft.com/en-us/library/dd899527(v=exchg.140).aspx
+    # Read-only
+    def conversation_id!(c)
+    end
+    
+    # @see http://msdn.microsoft.com/en-us/library/aa564015(v=exchg.140).aspx
+    def given_name!(g)
+      nbuild[NS_EWS_TYPES].GivenName(g[:text])
+    end
+    
+    # @see http://msdn.microsoft.com/en-us/library/aa563542(v=exchg.140).aspx
+    def initials!(i)
+      nbuild[NS_EWS_TYPES].Initials(i[:text])
+    end
+    
+    # @see http://msdn.microsoft.com/en-us/library/aa579549(v=exchg.140).aspx
+    def middle_name!(m)
+      nbuild[NS_EWS_TYPES].MiddleName(m[:text])
+    end
+    
+    # @see http://msdn.microsoft.com/en-us/library/aa580472(v=exchg.140).aspx
+    def nickname!(n)
+      nbuild[NS_EWS_TYPES].Nickname(n[:text])
+    end
+    
+    # @see http://msdn.microsoft.com/en-us/library/aa563736(v=exchg.140).aspx
+    def surname!(s)
+      nbuild[NS_EWS_TYPES].Surname(s[:text])
+    end
+    
+    # @see http://msdn.microsoft.com/en-us/library/aa494082(v=exchg.140).aspx
+    def department!(d)
+      nbuild[NS_EWS_TYPES].Department(d[:text])
+    end
+    
+    # @see http://msdn.microsoft.com/en-us/library/aa564513(v=exchg.140).aspx
+    def generation!(g)
+      nbuild[NS_EWS_TYPES].Generation(g[:text])
+    end
+    
+    # @see http://msdn.microsoft.com/en-us/library/aa565683(v=exchg.140).aspx
+    def categories!(c)
+      
+    end
+    
     # @see http://msdn.microsoft.com/en-us/library/aa563719(v=exchg.140).aspx
     # @param [Array] r An array of Mailbox type hashes to send to #mailbox!
     def to_recipients!(r)
       nbuild[NS_EWS_TYPES].ToRecipients {
-        r.each {|mbox| mailbox!(mbox[:mailbox]) }
+        if r.is_a?(Hash)
+          mailbox!(r[:mailbox])
+        else
+          r.each {|mbox| mailbox!(mbox[:mailbox]) }
+        end
       }
     end
 
     def cc_recipients!(r)
       nbuild[NS_EWS_TYPES].CcRecipients {
-        r.each {|mbox| mailbox!(mbox[:mailbox]) }
+        if r.is_a?(Hash)
+          mailbox!(r[:mailbox])
+        else
+          r.each {|mbox| mailbox!(mbox[:mailbox]) }
+        end
       }
     end
 
     def bcc_recipients!(r)
       nbuild[NS_EWS_TYPES].BccRecipients {
-        r.each {|mbox| mailbox!(mbox[:mailbox]) }
+        if r.is_a?(Hash)
+          mailbox!(r[:mailbox])
+        else        
+          r.each {|mbox| mailbox!(mbox[:mailbox]) }
+        end
       }
     end
 
@@ -917,19 +1170,31 @@ module Viewpoint::EWS::SOAP
 
     def required_attendees!(attendees)
       nbuild[NS_EWS_TYPES].RequiredAttendees {
-        attendees.each {|a| attendee!(a[:attendee])}
+        if attendees.is_a?(Hash)
+          attendee!(attendees[:attendee])
+        else
+          attendees.each {|a| attendee!(a[:attendee])}
+        end
       }
     end
 
     def optional_attendees!(attendees)
       nbuild[NS_EWS_TYPES].OptionalAttendees {
-        attendees.each {|a| attendee!(a[:attendee])}
+        if attendees.is_a?(Hash)
+          attendee!(attendees[:attendee])
+        else
+          attendees.each {|a| attendee!(a[:attendee])}
+        end
       }
     end
 
     def resources!(attendees)
       nbuild[NS_EWS_TYPES].Resources {
-        attendees.each {|a| attendee!(a[:attendee])}
+        if attendees.is_a?(Hash)
+          attendee!(attendees[:attendee])
+        else
+          attendees.each {|a| attendee!(a[:attendee])}
+        end
       }
     end
 
@@ -986,8 +1251,12 @@ module Viewpoint::EWS::SOAP
     # @see http://msdn.microsoft.com/en-us/library/aa565428(v=exchg.140).aspx
     def item_changes!(changes)
       nbuild.ItemChanges {
-        changes.each do |chg|
-          item_change!(chg)
+        if changes.is_a?(Hash)
+          item_change!(changes)
+        else
+          changes.each do |chg|
+            item_change!(chg)
+          end
         end
       }
     end
@@ -1004,8 +1273,12 @@ module Viewpoint::EWS::SOAP
     # @see http://msdn.microsoft.com/en-us/library/aa581074(v=exchg.140).aspx
     def updates!(updates)
       @nbuild[NS_EWS_TYPES].Updates {
-        updates.each do |update|
-          dispatch_update_type!(update)
+        if updates.is_a?(Hash)
+          dispatch_update_type!(updates)
+        else
+          updates.each do |update|
+            dispatch_update_type!(update)
+          end
         end
       }
     end

@@ -25,9 +25,9 @@ module Viewpoint::EWS::Types
     include Viewpoint::EWS::Types::Item
 
     ATTACH_KEY_PATHS = {
-      :id   => [:attachment_id, :attribs, :id],
-      :parent_item_id  => [:attachment_id, :attribs, :root_item_id],
-      :parent_change_key  => [:attachment_id, :attribs, :root_item_change_key],
+      :id   => [:attachment_id, :id],
+      :parent_item_id  => [:attachment_id, :root_item_id],
+      :parent_change_key  => [:attachment_id, :root_item_change_key],
       :name => [:name, :text],
       :content_type => [:content_type, :text],
       :content_id => [:content_id],

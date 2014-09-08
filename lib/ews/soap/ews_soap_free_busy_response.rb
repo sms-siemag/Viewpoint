@@ -22,23 +22,22 @@ module Viewpoint::EWS::SOAP
 
     def initialize(sax_hash)
       @resp = sax_hash
-      simplify!
     end
 
     def envelope
-      @resp[:envelope][:elems]
+      @resp[:envelope]
     end
 
     def header
-      envelope[0][:header][:elems]
+      envelope[:header]
     end
 
     def body
-      envelope[1][:body][:elems]
+      envelope[:body]
     end
 
     def get_user_availability_response
-      body.first[:get_user_availability_response][:elems].first[:free_busy_response_array][:elems].first[:free_busy_response][:elems]
+      body.first[:get_user_availability_response].first[:free_busy_response_array].first[:free_busy_response]
     end
 
     def response
@@ -46,12 +45,12 @@ module Viewpoint::EWS::SOAP
     end
 
     def calendar_event_array
-      result = find_in_hash_list(get_user_availability_response[1][:free_busy_view][:elems], :calendar_event_array)
-      result ? result[:elems] : []
+      result = find_in_hash_list(get_user_availability_response[:free_busy_view], :calendar_event_array)
+      result ? result : []
     end
 
     def working_hours
-      get_user_availability_response[1][:free_busy_view][:elems][2][:working_hours][:elems]
+      get_user_availability_response[:free_busy_view][:working_hours]
     end
 
     def response_message
@@ -59,23 +58,23 @@ module Viewpoint::EWS::SOAP
     end
 
     def response_class
-      response_message[:attribs][:response_class]
+      response_message[:response_class]
     end
     alias :status :response_class
 
     def response_code
-      result = find_in_hash_list(response_message[:elems], :response_code)
+      result = find_in_hash_list(response_message, :response_code)
       result ? result[:text] : nil
     end
     alias :code :response_code
 
     def response_message_text
-      guard_hash response_message[:elems], [:message_text, :text]
+      guard_hash response_message, [:message_text, :text]
     end
     alias :message :response_message_text
 
     def response_key
-      response_message[:elems]
+      response_message
     end
 
     def success?
@@ -83,12 +82,6 @@ module Viewpoint::EWS::SOAP
     end
 
     private
-
-    def simplify!
-#     key = response_key
-#     body[0][key] = body[0][key][:elems].inject(:merge)
-#     response_message[:elems] = response_message[:elems].inject(:merge)
-    end
 
     # If the keys don't exist in the Hash return nil
     # @param[Hash] hsh

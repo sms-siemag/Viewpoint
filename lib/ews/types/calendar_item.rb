@@ -16,12 +16,12 @@ module Viewpoint::EWS::Types
       location:     [:location, :text],
       all_day?:     [:is_all_day_event, :text],
       my_response_type:   [:my_response_type, :text],
-      organizer: [:organizer, :elems, 0, :mailbox, :elems],
-      optional_attendees: [:optional_attendees, :elems ],
-      required_attendees: [:required_attendees, :elems ],
-      recurrence: [:recurrence, :elems ],
-      deleted_occurrences: [:deleted_occurrences, :elems ],
-      modified_occurrences: [:modified_occurrences, :elems ]
+      organizer: [:organizer, :mailbox],
+      optional_attendees: [:optional_attendees],
+      required_attendees: [:required_attendees],
+      recurrence: [:recurrence],
+      deleted_occurrences: [:deleted_occurrences],
+      modified_occurrences: [:modified_occurrences]
    }
 
     CALENDAR_ITEM_KEY_TYPES = {

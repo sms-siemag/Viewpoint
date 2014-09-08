@@ -125,7 +125,7 @@ private
   end
 
   def get_item_parser(resp)
-    rm = resp.response_messages[0]
+    rm = resp.response_messages
 
     if(rm && rm.status == 'Success')
       i = rm.items.first
@@ -168,7 +168,7 @@ private
   end
 
   def find_items_parser(resp)
-    rm = resp.response_messages[0]
+    rm = resp.response_messages
     if rm.success?
       items = []
       rm.root_folder.items.each do |i|
@@ -188,7 +188,7 @@ private
         obj[:success] = true
         item = r.items.first
         key = item.keys.first
-        obj[:item_id] = item[key][:elems][0][:item_id][:attribs][:id]
+        obj[:item_id] = item[key][:item_id][:id]
       else
         obj[:success] = false
         obj[:error_message] = "#{r.response_code}: #{r.message_text}"
@@ -217,7 +217,7 @@ private
       rm.each do |i|
         if i.success? then
           type = i.type
-          items << class_by_name(type).new(ews, i.message[:elems])
+          items << class_by_name(type).new(ews, i.message)
         else
           code = i.respond_to?(:code) ? i.code : "Unknown"
           text = i.respond_to?(:message_text) ? i.message_text : "Unknown"

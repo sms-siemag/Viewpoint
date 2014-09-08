@@ -22,11 +22,11 @@ module Viewpoint::EWS::SOAP
       if result.success?
         zones = []
         result.response_messages.each do |message|
-          elements = message[:get_server_time_zones_response_message][:elems][:time_zone_definitions][:elems]
+          elements = message[:get_server_time_zones_response_message][:time_zone_definitions]
           elements.each do |definition|
             data = {
-                id: definition[:time_zone_definition][:attribs][:id],
-                name: definition[:time_zone_definition][:attribs][:name]
+                id: definition[:time_zone_definition][:id],
+                name: definition[:time_zone_definition][:name]
             }
             zones << OpenStruct.new(data)
           end

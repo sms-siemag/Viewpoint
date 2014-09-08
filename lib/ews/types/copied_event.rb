@@ -21,9 +21,9 @@ module Viewpoint::EWS::Types
   class CopiedEvent < Event
 
     COPIED_EVENT_KEY_PATHS = {
-      :old_item_id    => [:old_item_id, :attribs],
-      :old_folder_id  => [:old_folder_id, :attribs],
-      :old_parent_folder_id  => [:old_parent_folder_id, :attribs],
+      :old_item_id    => [:old_item_id],
+      :old_folder_id  => [:old_folder_id],
+      :old_parent_folder_id  => [:old_parent_folder_id],
     }
 
     COPIED_EVENT_KEY_TYPES = {

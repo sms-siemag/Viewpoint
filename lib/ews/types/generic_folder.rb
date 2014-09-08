@@ -26,11 +26,11 @@ module Viewpoint::EWS::Types
     include Viewpoint::StringUtils
 
     GFOLDER_KEY_PATHS = {
-      :folder_id        => [:folder_id, :attribs],
-      :id               => [:folder_id, :attribs, :id],
-      :change_key       => [:folder_id, :attribs, :change_key],
-      :parent_folder_id => [:parent_folder_id, :attribs, :id],
-      :parent_folder_change_key => [:parent_folder_id, :attribs, :change_key],
+      :folder_id        => [:folder_id,],
+      :id               => [:folder_id, :id],
+      :change_key       => [:folder_id, :change_key],
+      :parent_folder_id => [:parent_folder_id, :id],
+      :parent_folder_change_key => [:parent_folder_id, :change_key],
       :folder_class     => [:folder_class, :text],
       :total_count      => [:total_count, :text],
       :child_folder_count => [:child_folder_count, :text],
@@ -53,7 +53,7 @@ module Viewpoint::EWS::Types
     # @param [Hash] ews_item the EWS parsed response document
     def initialize(ews, ews_item)
       super
-      simplify!
+      # simplify!
       @sync_state = nil
       @synced = false
     end
@@ -155,7 +155,7 @@ module Viewpoint::EWS::Types
 
     def get_all_properties!
       @ews_item = get_folder(:base_shape => 'AllProperties')
-      simplify!
+      # simplify!
     end
 
     def available_categories
@@ -167,7 +167,7 @@ module Viewpoint::EWS::Types
         user_config_props: 'XmlData'
       }
       resp = ews.get_user_configuration(opts)
-      #txt = resp.response_message[:elems][:get_user_configuration_response_message][:elems][1][:user_configuration][:elems][1][:xml_data][:text]
+      #txt = resp.response_message[:get_user_configuration_response_message][:user_configuration][:xml_data][:text]
       #Base64.decode64 txt
     end
 
@@ -189,7 +189,7 @@ module Viewpoint::EWS::Types
 
       resp = ews.sync_folder_items item_shape: item_shape,
         sync_folder_id: self.folder_id, max_changes_returned: sync_amount, sync_state: sync_state
-      rmsg = resp.response_messages[0]
+      rmsg = resp.response_messages
 
       if rmsg.success?
         @synced = rmsg.includes_last_item_in_range?
@@ -199,10 +199,10 @@ module Viewpoint::EWS::Types
           ctype = c.keys.first
           rhash[ctype] = [] unless rhash.has_key?(ctype)
           if ctype == :delete || ctype == :read_flag_change
-            rhash[ctype] << c[ctype][:elems][0][:item_id][:attribs]
+            rhash[ctype] << c[ctype][:item_id]
           else
-            type = c[ctype][:elems][0].keys.first
-            item = class_by_name(type).new(ews, c[ctype][:elems][0][type])
+            type = c[ctype].keys.first
+            item = class_by_name(type).new(ews, c[ctype][type])
             rhash[ctype] << item
           end
         end
@@ -288,7 +288,7 @@ module Viewpoint::EWS::Types
       begin
         if subscribed?
           resp = ews.get_events(@subscription_id, @watermark)
-          rmsg = resp.response_messages[0]
+          rmsg = resp.response_messages
           @watermark = rmsg.new_watermark
           # @todo if parms[:more_events] # get more events
           rmsg.events.collect{|ev|
@@ -321,7 +321,7 @@ module Viewpoint::EWS::Types
     end
 
     def simplify!
-      @ews_item = @ews_item[:elems].inject({}) do |o,i|
+      @ews_item = @ews_item.inject({}) do |o,i|
         key = i.keys.first
         if o.has_key?(key)
           if o[key].is_a?(Array)
@@ -359,7 +359,7 @@ module Viewpoint::EWS::Types
 
     def get_folder_parser(resp)
       if(resp.status == 'Success')
-        f = resp.response_message[:elems][:folders][:elems][0]
+        f = resp.response_message[:folders]
         f.values.first
       else
         raise EwsError, "Could not retrieve folder. #{resp.code}: #{resp.message}"

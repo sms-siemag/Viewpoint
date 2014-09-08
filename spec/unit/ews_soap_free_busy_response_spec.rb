@@ -44,19 +44,15 @@ EOS
 
     it "should extract the response message" do
       extracted_response_message = {
-        attribs: {response_class: "Error"},
-        elems: [
-          {message_text:         {text: "E-mail address <>SMTP:foobar is not a valid SMTP address."}},
-          {response_code:        {text: "ErrorInvalidSmtpAddress"}},
-          {descriptive_link_key: {text: "0"}},
-          {message_xml: {
-            elems: [
-              {exception_type: {text: "Microsoft.Exchange.InfoWorker.Common.Availability.InvalidSmtpAddressException"}},
-              {exception_code: {text: "5035"}},
-              {exception_server_name: {text: "ANY-SERVER-NAME"}}
-            ]
-          }}
-        ]
+        response_class: "Error",
+        message_text:         {text: "E-mail address <>SMTP:foobar is not a valid SMTP address."},
+        response_code:        {text: "ErrorInvalidSmtpAddress"},
+        descriptive_link_key: {text: "0"},
+        message_xml: {
+          exception_type: {text: "Microsoft.Exchange.InfoWorker.Common.Availability.InvalidSmtpAddressException"},
+          exception_code: {text: "5035"},
+          exception_server_name: {text: "ANY-SERVER-NAME"}
+        }
       }
       resp.response_message.should == extracted_response_message
     end

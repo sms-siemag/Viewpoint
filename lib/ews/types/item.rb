@@ -10,15 +10,15 @@ module Viewpoint::EWS::Types
 
     module ClassMethods
       def init_simple_item(ews, id, change_key = nil, parent = nil)
-        ews_item = {item_id: {attribs: {id: id, change_key: change_key}}}
+        ews_item = {item_id: {id: id, change_key: change_key}}
         self.new ews, ews_item, parent
       end
     end
 
     ITEM_KEY_PATHS = {
-      item_id:        [:item_id, :attribs],
-      id:             [:item_id, :attribs, :id],
-      change_key:     [:item_id, :attribs, :change_key],
+      item_id:        [:item_id],
+      id:             [:item_id, :id],
+      change_key:     [:item_id, :change_key],
       subject:        [:subject, :text],
       sensitivity:    [:sensitivity, :text],
       size:           [:size, :text],
@@ -30,19 +30,19 @@ module Viewpoint::EWS::Types
       is_read?:       [:is_read, :text],
       is_draft?:      [:is_draft, :text],
       is_submitted?:  [:is_submitted, :text],
-      conversation_id:[:conversation_id, :attribs, :id],
-      categories:     [:categories, :elems],
+      conversation_id:[:conversation_id, :id],
+      categories:     [:categories],
       internet_message_id:[:internet_message_id, :text],
-      internet_message_headers:[:internet_message_headers, :elems],
-      sender:         [:sender, :elems, 0, :mailbox, :elems],
-      from:           [:from, :elems, 0, :mailbox, :elems],
-      to_recipients:  [:to_recipients, :elems],
-      cc_recipients:  [:cc_recipients, :elems],
-      attachments:    [:attachments, :elems],
+      internet_message_headers:[:internet_message_headers],
+      sender:         [:sender, :mailbox],
+      from:           [:from, :mailbox],
+      to_recipients:  [:to_recipients],
+      cc_recipients:  [:cc_recipients],
+      attachments:    [:attachments],
       importance:     [:importance, :text],
       conversation_index:     [:conversation_index, :text],
       conversation_topic:     [:conversation_topic, :text],
-      body_type: [:body, :attribs, :body_type],
+      body_type: [:body, :body_type],
       body: [:body, :text]
     }
 
@@ -57,7 +57,7 @@ module Viewpoint::EWS::Types
       is_submitted?:      ->(str){str.downcase == 'true'},
       categories:         ->(obj){obj.collect{|s| s[:string][:text]}},
       internet_message_headers: ->(obj){obj.collect{|h|
-          {h[:internet_message_header][:attribs][:header_name] =>
+          {h[:internet_message_header][:header_name] =>
             h[:internet_message_header][:text]} } },
       sender: :build_mailbox_user,
       from:   :build_mailbox_user,
@@ -82,7 +82,6 @@ module Viewpoint::EWS::Types
       super(ews, ews_item)
       @parent = parent
       @body_type = false
-      simplify!
       @new_file_attachments = []
       @new_item_attachments = []
       @new_inline_attachments = []
@@ -115,7 +114,6 @@ module Viewpoint::EWS::Types
 
     def get_all_properties!
       @ews_item = get_item(base_shape: 'AllProperties')
-      simplify!
     end
 
     # Mark an item as read or if you pass false, unread
@@ -135,12 +133,12 @@ module Viewpoint::EWS::Types
         :item_ids => [{:item_id => {:id => self.id}}]
       }
       resp = @ews.move_item(move_opts)
-      rmsg = resp.response_messages[0]
+      rmsg = resp.response_messages
 
       if rmsg.success?
         obj = rmsg.items.first
         itype = obj.keys.first
-        obj[itype][:elems][0][:item_id][:attribs][:id]
+        obj[itype][:item_id][:id]
       else
         raise EwsError, "Could not move item. #{resp.code}: #{resp.message}"
       end
@@ -157,12 +155,12 @@ module Viewpoint::EWS::Types
         :item_ids => [{:item_id => {:id => self.id}}]
       }
       resp = @ews.copy_item(copy_opts)
-      rmsg = resp.response_messages[0]
+      rmsg = resp.response_messages
 
       if rmsg.success?
         obj = rmsg.items.first
         itype = obj.keys.first
-        obj[itype][:elems][0][:item_id][:attribs][:id]
+        obj[itype][:item_id][:id]
       else
         raise EwsError, "Could not copy item. #{rmsg.response_code}: #{rmsg.message_text}"
       end
@@ -193,7 +191,7 @@ module Viewpoint::EWS::Types
       if draft?
         submit_attachments!
         resp = ews.send_item(item_ids: [{item_id: {id: self.id, change_key: self.change_key}}])
-        rm = resp.response_messages[0]
+        rm = resp.response_messages
         if rm.success?
           true
         else
@@ -214,7 +212,7 @@ module Viewpoint::EWS::Types
         inline_files: @new_inline_attachments
       }
       resp = ews.create_attachment(opts)
-      set_change_key resp.response_messages[0].attachments[0].parent_change_key
+      set_change_key resp.response_messages.attachments.parent_change_key
       @new_file_attachments = []
       @new_item_attachments = []
       @new_inline_attachments = []
@@ -280,28 +278,11 @@ module Viewpoint::EWS::Types
         ]
       }
       resp = ews.update_item({conflict_resolution: 'AutoResolve'}.merge(opts))
-      rmsg = resp.response_messages[0]
+      rmsg = resp.response_messages
       unless rmsg.success?
         raise EwsError, "#{rmsg.response_code}: #{rmsg.message_text}"
       end
       true
-    end
-
-    def simplify!
-      return unless @ews_item.has_key?(:elems)
-      @ews_item = @ews_item[:elems].inject({}) do |o,i|
-        key = i.keys.first
-        if o.has_key?(key)
-          if o[key].is_a?(Array)
-            o[key] << i[key]
-          else
-            o[key] = [o.delete(key), i[key]]
-          end
-        else
-          o[key] = i[key]
-        end
-        o
-      end
     end
 
     # Get a specific item by its ID.
@@ -327,9 +308,9 @@ module Viewpoint::EWS::Types
     end
 
     def get_item_parser(resp)
-      rm = resp.response_messages[0]
+      rm = resp.response_messages
       if(rm.status == 'Success')
-        rm.items[0].values.first
+        rm.items.values.first
       else
         raise EwsError, "Could not retrieve #{self.class}. #{rm.code}: #{rm.message_text}"
       end
@@ -347,13 +328,13 @@ module Viewpoint::EWS::Types
     end
 
     def build_deleted_occurrences(occurrences)
-      occurrences.collect{|a| DateTime.parse a[:deleted_occurrence][:elems][0][:start][:text]}
+      occurrences.collect{|a| DateTime.parse a[:deleted_occurrence][:start][:text]}
     end
 
     def build_modified_occurrences(occurrences)
       {}.tap do |h|
         occurrences.collect do |a|
-          elems = a[:occurrence][:elems]
+          elems = a[:occurrence]
 
           h[DateTime.parse(elems.find{|e| e[:original_start]}[:original_start][:text])] = {
             start: elems.find{|e| e[:start]}[:start][:text],
@@ -369,14 +350,14 @@ module Viewpoint::EWS::Types
 
     def build_mailbox_users(users)
       return [] if users.nil?
-      users.collect{|u| build_mailbox_user(u[:mailbox][:elems])}
+      users.collect{|u| build_mailbox_user(u[:mailbox])}
     end
 
     def build_attendees_users(users)
       return [] if users.nil?
       users.collect do |u|
-        u[:attendee][:elems].collect do |a|
-          build_mailbox_user(a[:mailbox][:elems]) if a[:mailbox]
+        u[:attendee].collect do |a|
+          build_mailbox_user(a[:mailbox]) if a[:mailbox]
         end
       end.flatten.compact
     end
@@ -423,7 +404,7 @@ module Viewpoint::EWS::Types
     #   we are only dealing with single items here.
     # @raise EwsCreateItemError on failure
     def validate_created_item(response)
-      msg = response.response_messages[0]
+      msg = response.response_messages
 
       if(msg.status == 'Success')
         msg.items.empty? ? true : parse_created_item(msg.items.first)

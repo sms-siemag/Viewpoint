@@ -26,9 +26,9 @@ module Viewpoint::EWS::Types
     EVENT_KEY_PATHS = {
       :watermark  => [:watermark, :text],
       :timestamp  => [:time_stamp, :text],
-      :item_id    => [:item_id, :attribs],
-      :folder_id  => [:folder_id, :attribs],
-      :parent_folder_id  => [:parent_folder_id, :attribs],
+      :item_id    => [:item_id],
+      :folder_id  => [:folder_id],
+      :parent_folder_id  => [:parent_folder_id],
     }
 
     EVENT_KEY_TYPES = {

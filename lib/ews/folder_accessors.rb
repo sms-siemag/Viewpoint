@@ -157,11 +157,10 @@ private
   # @param [Viewpoint::EWS::SOAP::EwsSoapResponse] resp
   def find_folders_parser(resp)
     if resp.status == 'Success'
-      folders = resp.response_message[:elems][:root_folder][:elems][0][:folders][:elems]
+      folders = resp.response_message[:root_folder][:folders]
       return [] if folders.nil?
-      folders.collect do |f|
-        ftype = f.keys.first
-        class_by_name(ftype).new(ews, f[ftype])
+      folders.collect do |ftype, data|
+        class_by_name(ftype).new(ews, data)
       end
     else
       raise EwsFolderNotFound, "Could not retrieve folders. #{resp.code}: #{resp.message}"
@@ -170,10 +169,9 @@ private
 
   def create_folder_parser(resp)
     if resp.status == 'Success'
-      folders = resp.response_message[:elems][:folders][:elems]
-      folders.collect do |f|
-        ftype = f.keys.first
-        class_by_name(ftype).new(ews, f[ftype])
+      folders = resp.response_message[:folders]
+      folders.collect do |ftype, data|
+        class_by_name(ftype).new(ews, data)
       end
     else
       raise EwsError, "Could not create folder. #{resp.code}: #{resp.message}"
@@ -197,7 +195,7 @@ private
   # @param [Viewpoint::EWS::SOAP::EwsSoapResponse] resp
   def get_folder_parser(resp)
     if(resp.status == 'Success')
-      f = resp.response_message[:elems][:folders][:elems][0]
+      f = resp.response_message[:root_folder][:folders]
       ftype = f.keys.first
       class_by_name(ftype).new(ews, f[ftype])
     else
@@ -230,10 +228,10 @@ private
         ctype = c.keys.first
         rhash[ctype] = [] unless rhash.has_key?(ctype)
         if ctype == :delete
-          rhash[ctype] << c[ctype][:elems][0][:folder_id][:attribs]
+          rhash[ctype] << c[ctype][:folder_id]
         else
-          type = c[ctype][:elems][0].keys.first
-          item = class_by_name(type).new(ews, c[ctype][:elems][0][type])
+          type = c[ctype].keys.first
+          item = class_by_name(type).new(ews, c[ctype][type])
           rhash[ctype] << item
         end
       end

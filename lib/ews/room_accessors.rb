@@ -28,11 +28,11 @@ module Viewpoint::EWS::RoomAccessors
   end
 
   def room_name( room )
-    room[:room][:elems][:id][:elems][0][:name][:text]
+    room[:room][:id][:name][:text]
   end
 
   def room_email( room )
-    room[:room][:elems][:id][:elems][1][:email_address][:text]
+    room[:room][:id][:email_address][:text]
   end
 
   private

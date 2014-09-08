@@ -37,7 +37,6 @@ module Viewpoint::EWS::Types
     def initialize(ews, mbox_user)
       @ews = ews
       @ews_item = mbox_user
-      simplify!
     end
 
     def out_of_office_settings
@@ -46,14 +45,14 @@ module Viewpoint::EWS::Types
       ewsi = resp.response.clone
       ewsi.delete(:response_message)
       return OutOfOffice.new(self,ewsi)
-      s = resp[:oof_settings]
-      @oof_state = s[:oof_state][:text]
-      @oof_ext_audience = s[:external_audience][:text]
-      @oof_start = DateTime.parse(s[:duration][:start_time][:text])
-      @oof_end = DateTime.parse(s[:duration][:end_time][:text])
-      @oof_internal_reply = s[:internal_reply][:message][:text]
-      @oof_external_reply = s[:internal_reply][:message][:text]
-      true
+      # s = resp[:oof_settings]
+      # @oof_state = s[:oof_state][:text]
+      # @oof_ext_audience = s[:external_audience][:text]
+      # @oof_start = DateTime.parse(s[:duration][:start_time][:text])
+      # @oof_end = DateTime.parse(s[:duration][:end_time][:text])
+      # @oof_internal_reply = s[:internal_reply][:message][:text]
+      # @oof_external_reply = s[:internal_reply][:message][:text]
+      # true
     end
 
     # Get information about when the user with the given email address is available.
@@ -133,12 +132,6 @@ module Viewpoint::EWS::Types
     private
 
 
-    def simplify!
-      @ews_item = @ews_item.inject({}){|m,o|
-        m[o.keys.first] = o.values.first[:text];
-        m
-      }
-    end
 
     def key_paths
       @key_paths ||= super.merge(MAILBOX_KEY_PATHS)

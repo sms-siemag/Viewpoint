@@ -24,7 +24,7 @@ module Viewpoint::EWS::SOAP
     def attachments
       return @attachments if @attachments
 
-      a = safe_hash_access message, [:elems, :attachments, :elems]
+      a = safe_hash_access message, [:attachments]
       @attachments = a.nil? ? nil : parse_attachments(a)
     end
 

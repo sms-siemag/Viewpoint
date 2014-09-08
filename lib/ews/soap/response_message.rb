@@ -27,7 +27,7 @@ module Viewpoint::EWS::SOAP
     end
 
     def response_class
-      message[:attribs][:response_class]
+      message[:response_class]
     end
     alias :status :response_class
 
@@ -36,20 +36,20 @@ module Viewpoint::EWS::SOAP
     end
 
     def message_text
-      safe_hash_access message, [:elems, :message_text, :text]
+      safe_hash_access message, [:message_text, :text]
     end
 
     def response_code
-      safe_hash_access message, [:elems, :response_code, :text]
+      safe_hash_access message, [:response_code, :text]
     end
     alias :code :response_code
 
     def message_xml
-      safe_hash_access message, [:elems, :message_xml, :text]
+      safe_hash_access message, [:message_xml, :text]
     end
 
     def items
-      safe_hash_access(message, [:elems, :items, :elems]) || []
+      safe_hash_access(message, [:items]) || []
     end
 
 
