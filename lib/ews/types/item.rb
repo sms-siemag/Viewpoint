@@ -308,7 +308,7 @@ module Viewpoint::EWS::Types
     end
 
     def get_item_parser(resp)
-      rm = resp.response_messages
+      rm = resp.response_messages[0]
       if(rm.status == 'Success')
         rm.items.values.first
       else
