@@ -45,6 +45,7 @@ module Viewpoint::EWS::SOAP
             builder.calendar_view!(opts[:calendar_view]) if opts[:calendar_view]
             builder.contacts_view!(opts[:contacts_view]) if opts[:contacts_view]
             builder.restriction!(opts[:restriction]) if opts[:restriction]
+            builder.sort_order!(opts[:sort_order]) if opts[:sort_order]
             builder.parent_folder_ids!(opts[:parent_folder_ids])
           }
         end
@@ -760,14 +761,14 @@ module Viewpoint::EWS::SOAP
       req = build_soap! do |type, builder|
         if(type == :header)
         else
-          builder.nbuild.ConvertId {|x|
+          builder.nbuild.ConvertId {|cid|
             builder.nbuild.parent.default_namespace = @default_ns
-            x.parent['DestinationFormat'] = opts[:destination_format].to_s.camel_case
-            x.SourceIds { |x|
-              x[NS_EWS_TYPES].AlternateId { |x|
-                x.parent['Format'] = opts[:format].to_s.camel_case
-                x.parent['Id'] = opts[:id]
-                x.parent['Mailbox'] = opts[:mailbox]
+            cid.parent['DestinationFormat'] = opts[:destination_format].to_s.camel_case
+            cid.SourceIds { |sid|
+              sid[NS_EWS_TYPES].AlternateId { |aid|
+                aid.parent['Format'] = opts[:format].to_s.camel_case
+                aid.parent['Id'] = opts[:id]
+                aid.parent['Mailbox'] = opts[:mailbox]
               }
             }
           }
