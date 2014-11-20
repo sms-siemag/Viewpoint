@@ -26,6 +26,8 @@ class Viewpoint::EWS::Connection
   #   @example https://<site>/ews/Exchange.asmx
   # @param [Hash] opts Misc config options (mostly for developement)
   # @option opts [Fixnum] :ssl_verify_mode
+  # @option opts [Fixnum] :receive_timeout override the default receive timeout
+  #   seconds
   # @option opts [Array]  :trust_ca an array of hashed dir paths or a file
   def initialize(endpoint, opts = {})
     @log = Logging.logger[self.class.name.to_s.to_sym]
@@ -37,8 +39,10 @@ class Viewpoint::EWS::Connection
       end
     end
     @httpcli.ssl_config.verify_mode = opts[:ssl_verify_mode] if opts[:ssl_verify_mode]
+    @httpcli.ssl_config.ssl_version = opts[:ssl_version] if opts[:ssl_version]
     # Up the keep-alive so we don't have to do the NTLM dance as often.
     @httpcli.keep_alive_timeout = 60
+    @httpcli.receive_timeout = opts[:receive_timeout] if opts[:receive_timeout]
     @endpoint = endpoint
   end
 
