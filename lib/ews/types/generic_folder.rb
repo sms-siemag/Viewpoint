@@ -377,6 +377,7 @@ module Viewpoint::EWS::Types
     def items_parser(resp)
       rm = resp.response_messages[0]
       if(rm.status == 'Success')
+        # items = FolderView.new(rm.root_folder)
         items = []
         rm.root_folder.items.each do |i|
           type = i.keys.first
