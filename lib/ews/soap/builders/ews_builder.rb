@@ -724,6 +724,11 @@ module Viewpoint::EWS::SOAP
       @nbuild[NS_EWS_TYPES].Timeout(tout)
     end
 
+    # @see https://msdn.microsoft.com/EN-US/library/ff406137(v=exchg.150).aspx
+    def connection_timeout!(ctout)
+      @nbuild.ConnectionTimeout(ctout)
+    end
+
     # @see http://msdn.microsoft.com/en-us/library/aa564048(v=EXCHG.140).aspx
     def status_frequency!(freq)
       @nbuild[NS_EWS_TYPES].StatusFrequency(freq)
