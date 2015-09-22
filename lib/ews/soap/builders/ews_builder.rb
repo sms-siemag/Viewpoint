@@ -1356,7 +1356,7 @@ module Viewpoint::EWS::SOAP
     def dispatch_field_uri!(uri, ns=NS_EWS_MESSAGES)
       type = uri.keys.first
       vals = uri[type].is_a?(Array) ? uri[type] : [uri[type]]
-      case type
+      case type.to_sym
       when :field_uRI, :field_uri
         vals.each do |val|
           value = val.is_a?(Hash) ? val[type] : val
