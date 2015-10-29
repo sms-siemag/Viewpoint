@@ -1081,6 +1081,14 @@ module Viewpoint::EWS::SOAP
       }
     end
 
+    def contact!(item)
+      nbuild[NS_EWS_TYPES].Contact {
+        item.each_pair {|k,v|
+          self.send("#{k}!", v)
+        }
+      }
+    end
+
     def forward_item!(item)
       nbuild[NS_EWS_TYPES].ForwardItem {
         item.each_pair {|k,v|
