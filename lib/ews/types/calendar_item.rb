@@ -31,7 +31,7 @@ module Viewpoint::EWS::Types
       is_unmodified?:   [:is_unmodified, :text],
       reminder_is_set?:   [:reminder_is_set, :text],
       calendar_item_type:   [:calendar_item_type, :text],
-      modified_occurrences: [:modified_occurrences, :elems ]
+      modified_occurrences: [:modified_occurrences, :elems ],
       reminder_due_by: [:reminder_due_by, :text],
       reminder_minutes_before_start: [:reminder_minutes_before_start, :text],
       reminder_is_set?:   [:reminder_is_set, :text],
@@ -52,7 +52,7 @@ module Viewpoint::EWS::Types
       optional_attendees: :build_attendees_users,
       required_attendees: :build_attendees_users,
       deleted_occurrences: :build_deleted_occurrences,
-      modified_occurrences: :build_modified_occurrences
+      modified_occurrences: :build_modified_occurrences,
       is_draft?:   ->(str){str.downcase == 'true'},
       is_from_me?:   ->(str){str.downcase == 'true'},
       reminder_is_set?:   ->(str){str.downcase == 'true'},
