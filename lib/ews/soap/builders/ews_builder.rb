@@ -1033,8 +1033,40 @@ module Viewpoint::EWS::SOAP
       }
     end
 
+    def absolute_yearly_recurrence!(item)
+      nbuild[NS_EWS_TYPES].AbsoluteYearlyRecurrence {
+        item.each_pair { |k, v|
+          self.send("#{k}!", v)
+        }
+      }
+    end
+
+    def relative_yearly_recurrence!(item)
+      nbuild[NS_EWS_TYPES].RelativeYearlyRecurrence {
+        item.each_pair { |k, v|
+          self.send("#{k}!", v)
+        }
+      }
+    end
+
     def interval!(num)
       nbuild[NS_EWS_TYPES].Interval(num)
+    end
+
+    def day_of_month!(num)
+      nbuild[NS_EWS_TYPES].DayOfMonth(num)
+    end
+
+    def days_of_week!(weekday)
+      nbuild[NS_EWS_TYPES].DaysOfWeek(weekday)
+    end
+
+    def day_of_week_index!(index)
+      nbuild[NS_EWS_TYPES].DayOfWeekIndex(index)
+    end
+
+    def month!(month)
+      nbuild[NS_EWS_TYPES].Month(month)
     end
 
     def no_end_recurrence!(item)
