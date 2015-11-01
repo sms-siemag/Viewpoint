@@ -104,24 +104,24 @@ module Viewpoint::EWS::SOAP
 
     # Used by streaming subscription clients to request notifications from the Client Access server
     # @see https://msdn.microsoft.com/EN-US/library/ff406172(v=exchg.150).aspx
+    # @see https://msdn.microsoft.com/en-us/library/office/dn458792(v=exchg.150).aspx
     #
-    # @param subscription_id    [String] Subscription identifier
+    # @param subscription_ids   [Array<String>] An array of Subscription identifiers
     # @param connection_timeout [Fixnum] Specifies the number of minutes to keep a connection open
     #        https://msdn.microsoft.com/EN-US/library/ff406137(v=exchg.150).aspx
-    #
-    # @return [Array] An array of Event items
-    def get_streaming_events(subscription_id, connection_timeout = 30)
+    def get_streaming_events(subscription_ids, connection_timeout = 30)
       req = build_soap! do |type, builder|
         if(type == :header)
         else
           builder.nbuild.GetStreamingEvents {
             builder.nbuild.parent.default_namespace = @default_ns
-            builder.subscription_id!(subscription_id)
+            builder.subscription_ids!(subscription_ids)
             builder.connection_timeout!(connection_timeout)
           }
         end
       end
-      do_soap_request(req, response_class: EwsResponse)
+
+      do_async_soap_request(req)
     end
 
     # ------- convenience methods ------- #
