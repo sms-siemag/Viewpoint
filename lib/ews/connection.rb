@@ -96,6 +96,8 @@ class Viewpoint::EWS::Connection
   # Send an asynchronous POST request to the web service
   # @return HTTPClient::Connection instance
   def post_async(xmldoc)
+    # Client need to be authenticated first.
+    # Related issue: https://github.com/nahi/httpclient/issues/181
     authenticate
     headers  = {'Content-Type' => 'text/xml'}
     @httpcli.post_async(@endpoint, xmldoc, headers)
