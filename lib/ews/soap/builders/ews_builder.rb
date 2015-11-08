@@ -734,6 +734,19 @@ module Viewpoint::EWS::SOAP
       @nbuild[NS_EWS_TYPES].URL(url)
     end
 
+    # @see https://msdn.microsoft.com/EN-US/library/ff406137(v=exchg.150).aspx
+    def connection_timeout!(ctout)
+      @nbuild[NS_EWS_MESSAGES].ConnectionTimeout(ctout)
+    end
+
+    def subscription_ids!(subids)
+      @nbuild[NS_EWS_MESSAGES].SubscriptionIds {
+        subids.each do |subid|
+          @nbuild[NS_EWS_TYPES].SubscriptionId(subid)
+        end
+      }
+    end
+
     # @see http://msdn.microsoft.com/en-us/library/aa563790(v=EXCHG.140).aspx
     def subscription_id!(subid)
       @nbuild.SubscriptionId(subid)
