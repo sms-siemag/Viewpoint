@@ -31,6 +31,11 @@ module Viewpoint::EWS::SOAP
       @notifications = n.nil? ? [] : parse_notifications(n)
     end
 
+    def error_subscription_ids
+      e = safe_hash_access message, [:elems, :error_subscription_ids, :elems]
+      e.nil? ? [] : e.map {|e| safe_hash_access(e, [:subscription_id, :text])}
+    end
+
     private
 
     def parse_notifications(notifications)
