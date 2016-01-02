@@ -212,6 +212,17 @@ module Viewpoint::EWS::SOAP
       connection.dispatch(self, soapmsg, opts)
     end
 
+    # Send the SOAP request to the endpoint.
+    def do_async_soap_request(soapmsg)
+      @log.debug <<-EOF.gsub(/^ {8}/, '')
+        Sending SOAP Request:
+        ----------------
+        #{soapmsg}
+        ----------------
+      EOF
+      connection.post_async(soapmsg)
+    end
+
     # @param [String] response the SOAP response string
     # @param [Hash] opts misc options to send to the parser
     # @option opts [Class] :response_class the response class
