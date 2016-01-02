@@ -22,6 +22,7 @@ class Viewpoint::EWS::Connection
   include Viewpoint::EWS
 
   attr_reader :endpoint
+  attr_reader :httpcli
   # @param [String] endpoint the URL of the web service.
   #   @example https://<site>/ews/Exchange.asmx
   # @param [Hash] opts Misc config options (mostly for developement)

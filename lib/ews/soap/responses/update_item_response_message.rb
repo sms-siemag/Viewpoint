@@ -17,29 +17,20 @@
 =end
 
 module Viewpoint::EWS::SOAP
-  class EwsParser
-    include Viewpoint::EWS
 
-    # @param [String] soap_resp
-    def initialize(soap_resp)
-      @soap_resp  = soap_resp
-      @sax_doc    = EwsSaxDocument.new
+  class UpdateItemResponseMessage < ResponseMessage
+    include Viewpoint::StringUtils
+
+    def item
+      unless @item
+        ev = items.first
+        type = ev.keys.first
+        klass = Viewpoint::EWS::Types.const_get(camel_case(type))
+        @item = klass.new(nil, ev[type])
+      end
+      @item
     end
 
-    def parse(opts = {})
-      opts[:response_class] ||= EwsSoapResponse
-      # https://github.com/WinRb/Viewpoint/issues/116
-      # sax_parser.parse(@soap_resp)
-      sax_parser.parse(@soap_resp.gsub(/&#x[0-1]?[0-9a-eA-E];/, ' '))
-      opts[:response_class].new @sax_doc.struct
-    end
+  end # UpdateItemResponseMessage
 
-
-    private
-
-    def sax_parser
-      @parser ||= Nokogiri::XML::SAX::Parser.new(@sax_doc)
-    end
-
-  end # EwsParser
-end # Viewpoint
+end # Viewpoint::EWS::SOAP

@@ -19,12 +19,28 @@ module Viewpoint::EWS::Types
       uid:        [:u_i_d, :text],
       legacy_free_busy_status: [:legacy_free_busy_status, :text],
       my_response_type:   [:my_response_type, :text],
-      organizer: [:organizer, :mailbox],
-      optional_attendees: [:optional_attendees],
-      required_attendees: [:required_attendees],
-      recurrence: [:recurrence],
-      deleted_occurrences: [:deleted_occurrences],
-      modified_occurrences: [:modified_occurrences]
+      organizer: [:organizer, :elems, 0, :mailbox, :elems],
+      optional_attendees: [:optional_attendees, :elems ],
+      required_attendees: [:required_attendees, :elems ],
+      recurrence: [:recurrence, :elems ],
+      deleted_occurrences: [:deleted_occurrences, :elems ],
+      has_attachments?: [:has_attachments, :text ],
+      attachments: [:attachments, :elems ],
+      reminder_due_by: [:reminder_due_by, :text],
+      reminder_minutes_before_start: [:reminder_minutes_before_start, :text],
+      is_draft?:   [:is_draft, :text],
+      is_from_me?:   [:is_from_me, :text],
+      is_unmodified?:   [:is_unmodified, :text],
+      reminder_is_set?:   [:reminder_is_set, :text],
+      calendar_item_type:   [:calendar_item_type, :text],
+      modified_occurrences: [:modified_occurrences, :elems ],
+      reminder_due_by: [:reminder_due_by, :text],
+      reminder_minutes_before_start: [:reminder_minutes_before_start, :text],
+      reminder_is_set?:   [:reminder_is_set, :text],
+      is_draft?:   [:is_draft, :text],
+      is_from_me?:   [:is_from_me, :text],
+      is_unmodified?:   [:is_unmodified, :text],
+      calendar_item_type:   [:calendar_item_type, :text]
    }
 
     CALENDAR_ITEM_KEY_TYPES = {
@@ -39,7 +55,11 @@ module Viewpoint::EWS::Types
       optional_attendees: :build_attendees_users,
       required_attendees: :build_attendees_users,
       deleted_occurrences: :build_deleted_occurrences,
-      modified_occurrences: :build_modified_occurrences
+      modified_occurrences: :build_modified_occurrences,
+      is_draft?:   ->(str){str.downcase == 'true'},
+      is_from_me?:   ->(str){str.downcase == 'true'},
+      reminder_is_set?:   ->(str){str.downcase == 'true'},
+      is_unmodified?:   ->(str){str.downcase == 'true'}
     }
 
     CALENDAR_ITEM_KEY_ALIAS = {}

@@ -115,10 +115,15 @@ module Viewpoint::EWS::SOAP
         se = vals.delete(:sub_elements)
         txt = vals.delete(:text)
         xmlns_attribute = vals.delete(:xmlns_attribute)
-
-        node = @nbuild.send(camel_case(keys.first), txt, vals) {|x|
-          build_xml!(se) if se
-        }
+        if keys.first == "string"
+          node = @nbuild.String(txt, vals) {|x|
+            build_xml!(se) if se
+          }
+        else
+          node = @nbuild.send(camel_case(keys.first), txt, vals) {|x|
+            build_xml!(se) if se
+          }
+        end
 
         # Set node level namespace
         node.xmlns = NAMESPACES["xmlns:#{xmlns_attribute}"] if xmlns_attribute
@@ -384,6 +389,172 @@ module Viewpoint::EWS::SOAP
 
     def display_name!(name)
       nbuild[NS_EWS_TYPES].DisplayName(name[:text])
+    end
+
+    def given_name!(name)
+      nbuild[NS_EWS_TYPES].GivenName(name)
+    end
+
+    def initials!(name)
+      nbuild[NS_EWS_TYPES].Initials(name)
+    end
+
+    def middle_name!(name)
+      nbuild[NS_EWS_TYPES].MiddleName(name)
+    end
+
+    def company_name!(name)
+      nbuild[NS_EWS_TYPES].CompanyName(name)
+    end
+
+    def assistant_name!(name)
+      nbuild[NS_EWS_TYPES].AssistantName(name)
+    end
+
+    def birthday!(name)
+      nbuild[NS_EWS_TYPES].Birthday(name)
+    end
+
+    def business_home_page!(name)
+      nbuild[NS_EWS_TYPES].BusinessHomePage(name)
+    end
+
+    def department!(name)
+      nbuild[NS_EWS_TYPES].Department(name)
+    end
+
+    def generation!(name)
+      nbuild[NS_EWS_TYPES].Generation(name)
+    end
+
+    def nickname!(name)
+      nbuild[NS_EWS_TYPES].Nickname(name)
+    end
+
+    def job_title!(name)
+      nbuild[NS_EWS_TYPES].JobTitle(name)
+    end
+
+    def manager!(name)
+      nbuild[NS_EWS_TYPES].Manager(name)
+    end
+
+    def mileage!(name)
+      nbuild[NS_EWS_TYPES].Mileage(name)
+    end
+
+    def office_location!(name)
+      nbuild[NS_EWS_TYPES].OfficeLocation(name)
+    end
+
+    def profession!(name)
+      nbuild[NS_EWS_TYPES].Profession(name)
+    end
+
+    def spouse_name!(name)
+      nbuild[NS_EWS_TYPES].SpouseName(name)
+    end
+
+    def surname!(name)
+      nbuild[NS_EWS_TYPES].Surname(name)
+    end
+
+    def file_as!(name)
+      nbuild[NS_EWS_TYPES].FileAs(name)
+    end
+
+    def file_as_mapping!(name)
+      nbuild[NS_EWS_TYPES].FileAsMapping(name)
+    end
+
+    def wedding_anniversary!(name)
+      nbuild[NS_EWS_TYPES].WeddingAnniversary(name)
+    end
+
+    def phonetic_full_name!(name)
+      nbuild[NS_EWS_TYPES].PhoneticFullName(name)
+    end
+
+    def phonetic_first_name!(name)
+      nbuild[NS_EWS_TYPES].PhoneticFirstName(name)
+    end
+
+    def phonetic_last_name!(name)
+      nbuild[NS_EWS_TYPES].PhoneticLastName(name)
+    end
+
+    def alias!(name)
+      nbuild[NS_EWS_TYPES].Alias(name)
+    end
+
+    def notes!(name)
+      nbuild[NS_EWS_TYPES].Notes(name)
+    end
+
+    def children!(names)
+      nbuild[NS_EWS_TYPES].Children{
+        names.each{|name|nbuild[NS_EWS_TYPES].String(name)}
+      }
+    end
+
+    def categories!(names)
+      nbuild[NS_EWS_TYPES].Categories{
+        names.each{|name|nbuild[NS_EWS_TYPES].String(name)}
+      }
+    end
+
+    def companies!(names)
+      nbuild[NS_EWS_TYPES].Companies{
+        names.each{|name|nbuild[NS_EWS_TYPES].String(name)}
+      }
+    end
+
+    def email_addresses!(addresses)
+      nbuild[NS_EWS_TYPES].EmailAddresses {
+        addresses.each do |address|
+          attrs = {Key: address[:key]}
+          attrs[:Name] = address[:name] if address[:name] && address[:name] != ''
+          attrs[:RoutingType] = address[:routing_type] if address[:routing_type] && address[:routing_type] != ''
+          attrs[:MailboxType] = address[:mailbox_type] if address[:mailbox_type] && address[:mailbox_type] != ''
+          nbuild[NS_EWS_TYPES].Entry(attrs) {
+            nbuild.text address[:text]
+          }
+        end
+      }
+    end
+
+    def physical_addresses!(addresses)
+      nbuild[NS_EWS_TYPES].PhysicalAddresses {
+        addresses.each do |address|
+          nbuild[NS_EWS_TYPES].Entry(Key: address[:key]) {
+            nbuild[NS_EWS_TYPES].Street(address[:street])
+            nbuild[NS_EWS_TYPES].City(address[:city])
+            nbuild[NS_EWS_TYPES].State(address[:state])
+            nbuild[NS_EWS_TYPES].CountryOrRegion(address[:country_or_region])
+            nbuild[NS_EWS_TYPES].PostalCode(address[:postal_code])
+          }
+        end
+      }
+    end
+
+    def im_addresses!(addresses)
+      nbuild[NS_EWS_TYPES].ImAddresses {
+        addresses.each do |address|
+          nbuild[NS_EWS_TYPES].Entry(Key: address[:key]) {
+            nbuild.text address[:text]
+          }
+        end
+      }
+    end
+
+    def phone_numbers!(numbers)
+      nbuild[NS_EWS_TYPES].PhoneNumbers {
+        numbers.each do |number|
+          nbuild[NS_EWS_TYPES].Entry(Key: number[:key]) {
+            nbuild.text number[:text]
+          }
+        end
+      }
     end
 
     # Build the AdditionalProperties element
@@ -929,8 +1100,40 @@ module Viewpoint::EWS::SOAP
       }
     end
 
+    def absolute_yearly_recurrence!(item)
+      nbuild[NS_EWS_TYPES].AbsoluteYearlyRecurrence {
+        item.each_pair { |k, v|
+          self.send("#{k}!", v)
+        }
+      }
+    end
+
+    def relative_yearly_recurrence!(item)
+      nbuild[NS_EWS_TYPES].RelativeYearlyRecurrence {
+        item.each_pair { |k, v|
+          self.send("#{k}!", v)
+        }
+      }
+    end
+
     def interval!(num)
       nbuild[NS_EWS_TYPES].Interval(num)
+    end
+
+    def day_of_month!(num)
+      nbuild[NS_EWS_TYPES].DayOfMonth(num)
+    end
+
+    def days_of_week!(weekday)
+      nbuild[NS_EWS_TYPES].DaysOfWeek(weekday)
+    end
+
+    def day_of_week_index!(index)
+      nbuild[NS_EWS_TYPES].DayOfWeekIndex(index)
+    end
+
+    def month!(month)
+      nbuild[NS_EWS_TYPES].Month(month)
     end
 
     def no_end_recurrence!(item)
@@ -953,10 +1156,33 @@ module Viewpoint::EWS::SOAP
       nbuild[NS_EWS_TYPES].NumberOfOccurrences(count)
     end
 
+    def cancel_calendar_item!(item)
+      nbuild[NS_EWS_TYPES].CancelCalendarItem {
+        item.each_pair {|k,v|
+          self.send("#{k}!", v)
+        }
+      }
+    end
 
     def task!(item)
       nbuild[NS_EWS_TYPES].Task {
         item.each_pair {|k, v|
+          self.send("#{k}!", v)
+        }
+      }
+    end
+
+    def contact!(item)
+      nbuild[NS_EWS_TYPES].Contact {
+        item.each_pair {|k,v|
+          self.send("#{k}!", v)
+        }
+      }
+    end
+
+    def contact!(item)
+      nbuild[NS_EWS_TYPES].Contact {
+        item.each_pair {|k,v|
           self.send("#{k}!", v)
         }
       }
@@ -1481,8 +1707,9 @@ module Viewpoint::EWS::SOAP
     end
 
     def user_configuration_name!(cfg_name)
+      ns = @nbuild.parent.parent.name.match(/UserConfiguration/i) ? NS_EWS_TYPES : NS_EWS_MESSAGES
       attribs = {'Name' => cfg_name.delete(:name)}
-      @nbuild[NS_EWS_MESSAGES].UserConfigurationName(attribs) {
+      @nbuild[ns].UserConfigurationName(attribs) {
         fid = cfg_name.keys.first
         self.send "#{fid}!", cfg_name[fid][:id], cfg_name[fid][:change_key]
       }
@@ -1490,6 +1717,17 @@ module Viewpoint::EWS::SOAP
 
     def user_configuration_properties!(cfg_prop)
       @nbuild[NS_EWS_MESSAGES].UserConfigurationProperties(cfg_prop)
+    end
+
+    def user_configuration!(options)
+      @nbuild[NS_EWS_MESSAGES].UserConfiguration {|x|
+        user_configuration_name!(options[:user_config_name])
+        xml_data!(options[:xml_data]) if options[:xml_data]
+      }
+    end
+
+    def xml_data!(xml_data)
+      @nbuild[NS_EWS_TYPES].XmlData(Base64.encode64(xml_data))
     end
 
     # ---------------------- Helpers -------------------- #
@@ -1547,8 +1785,7 @@ module Viewpoint::EWS::SOAP
     def dispatch_field_uri!(uri, ns=NS_EWS_MESSAGES)
       type = uri.keys.first
       vals = uri[type].is_a?(Array) ? uri[type] : [uri[type]]
-
-      case type
+      case type.to_sym
       when :field_uRI, :field_uri
         vals.each do |val|
           value = val.is_a?(Hash) ? val[type] : val
