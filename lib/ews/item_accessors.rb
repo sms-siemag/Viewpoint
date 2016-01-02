@@ -126,9 +126,8 @@ private
 
   def get_item_parser(resp)
     rm = resp.response_messages
-
-    if(rm && rm.status == 'Success')
-      i = rm.items.first
+    if(rm && rm.first.status == 'Success')
+      i = rm.first.items
       itype = i.keys.first
       class_by_name(itype).new(ews, i[itype])
     else
