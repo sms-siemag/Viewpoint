@@ -1344,7 +1344,7 @@ module Viewpoint::EWS::SOAP
         if e.is_a?(Hash)
           emailaddress!(e[:entry])
         else
-          e.each {|email| emailaddress!(email[:entry]) }
+          e.each {|email| emailaddress!(email[:entry]||email) }
         end
       }
     end
@@ -1361,7 +1361,7 @@ module Viewpoint::EWS::SOAP
         if p.is_a?(Hash)
           phonenumbers!(p[:entry])
         else
-          p.each {|phone| phonenumbers!(phone[:entry]) }
+          p.each {|phone| phonenumbers!(phone[:entry]||phone) }
         end
       }
     end
@@ -1378,7 +1378,7 @@ module Viewpoint::EWS::SOAP
         if d.is_a?(Hash)
           imaddresses!(d[:entry])
         else
-          d.each {|imaddress| imaddresses!(imaddress[:entry]) }
+          d.each {|imaddress| imaddresses!(imaddress[:entry]||imaddress) }
         end
       }
     end
