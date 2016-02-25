@@ -18,16 +18,16 @@ module Viewpoint::EWS::Types
       template.saved_item_folder_id = {id: self.id, change_key: self.change_key}
       rm = ews.create_item(template.to_ews_create).response_messages.first
       if rm && rm.success?
-        # Contact.new ews, rm.items[:contact]
-      # else
-        # raise EwsCreateItemError, "Could not create contact in folder. #{rm.code}: #{rm.message_text}" unless rm
-      # end
-    # end
-        Contact.new ews, rm.items.first[:contact][:elems].first
+        Contact.new ews, rm.items[:contact]
       else
-        raise EwsCreateItemError, "Could not create item in folder. #{rm.code}: #{rm.message_text}" unless rm
-      end      
+        raise EwsCreateItemError, "Could not create contact in folder. #{rm.code}: #{rm.message_text}" unless rm
+      end
     end
+    #     Contact.new ews, rm.items.first[:contact][:elems].first
+    #   else
+    #     raise EwsCreateItemError, "Could not create item in folder. #{rm.code}: #{rm.message_text}" unless rm
+    #   end
+    # end
 
   end
 end
