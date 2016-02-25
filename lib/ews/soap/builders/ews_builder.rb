@@ -1342,7 +1342,7 @@ module Viewpoint::EWS::SOAP
     def email_addresses!(e)
       nbuild[NS_EWS_TYPES].EmailAddresses {
         if e.is_a?(Hash)
-          emailaddress!(e[:entry])
+          emailaddress!(e[:entry]||email)
         else
           e.each {|email| emailaddress!(email[:entry]||email) }
         end
@@ -1359,7 +1359,7 @@ module Viewpoint::EWS::SOAP
     def phone_numbers!(p)
       nbuild[NS_EWS_TYPES].PhoneNumbers {
         if p.is_a?(Hash)
-          phonenumbers!(p[:entry])
+          phonenumbers!(p[:entry]||phone)
         else
           p.each {|phone| phonenumbers!(phone[:entry]||phone) }
         end
@@ -1376,7 +1376,7 @@ module Viewpoint::EWS::SOAP
     def im_addresses!(d)
       nbuild[NS_EWS_TYPES].ImAddresses {
         if d.is_a?(Hash)
-          imaddresses!(d[:entry])
+          imaddresses!(d[:entry]||imaddress)
         else
           d.each {|imaddress| imaddresses!(imaddress[:entry]||imaddress) }
         end
